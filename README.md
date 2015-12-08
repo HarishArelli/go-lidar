@@ -1,2 +1,3 @@
-# pulsewave-reader
-Simple utility for reading pulsewaves files.
+# LIDAR file access with go
+
+Simple binary reading of las and pulsewaves files.
