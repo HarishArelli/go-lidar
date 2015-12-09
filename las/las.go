@@ -11,10 +11,10 @@ import (
 
 type Lasf struct {
 	Header
-	fname  string
-	fin    io.ReadSeeker
-	index  uint64
-	point  Pointer
+	fname string
+	fin   io.ReadSeeker
+	index uint64
+	point Pointer
 }
 
 var dbg *log.Logger
