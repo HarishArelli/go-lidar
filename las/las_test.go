@@ -18,7 +18,7 @@ func TestSignature(t *testing.T) {
 	if l == nil || err != nil {
 		t.FailNow()
 	}
-	if l.header.Signature() != [4]byte{'L', 'A', 'S', 'F'} {
+	if l.Signature() != [4]byte{'L', 'A', 'S', 'F'} {
 		t.Fail()
 	}
 }
@@ -66,10 +66,10 @@ func TestVersion(t *testing.T) {
 	if l == nil || err != nil {
 		t.FailNow()
 	}
-	if l.header.VMaj() != 1 {
+	if l.VMaj() != 1 {
 		t.Fail()
 	}
-	if l.header.VMin() != 2 {
+	if l.VMin() != 2 {
 		t.Fail()
 	}
 }
@@ -123,7 +123,7 @@ func TestPointFormat(t *testing.T) {
 	if l == nil || err != nil {
 		t.FailNow()
 	}
-	if l.header.PointFormat() != 2 {
+	if l.PointFormat() != 2 {
 		t.Fail()
 	}
 }
@@ -148,7 +148,7 @@ func TestPointCount(t *testing.T) {
 		i++
 	}
 	if i != 25008 {
-		t.Logf("Read %d points, header says %d", i, l.header.PointCount())
+		t.Logf("Read %d points, header says %d", i, l.PointCount())
 		t.Fail()
 	}
 }
@@ -166,7 +166,7 @@ func TestXScale(t *testing.T) {
 	if l == nil || err != nil {
 		t.FailNow()
 	}
-	if l.header.XScale() != 0.001 {
+	if l.XScale() != 0.001 {
 		t.Fail()
 	}
 }
@@ -176,7 +176,7 @@ func TestYScale(t *testing.T) {
 	if l == nil || err != nil {
 		t.FailNow()
 	}
-	if l.header.YScale() != 0.001 {
+	if l.YScale() != 0.001 {
 		t.Fail()
 	}
 }
@@ -186,8 +186,8 @@ func TestZScale(t *testing.T) {
 	if l == nil || err != nil {
 		t.FailNow()
 	}
-	if l.header.ZScale() != 0.001 {
-		t.Logf("Invalid z scale: %f", l.header.ZScale())
+	if l.ZScale() != 0.001 {
+		t.Logf("Invalid z scale: %f", l.ZScale())
 		t.Fail()
 	}
 }
@@ -286,14 +286,14 @@ func TestRawExtents(t *testing.T) {
 			t.Log(err)
 			t.FailNow()
 		}
-		x := p.X() * l.header.XScale()
+		x := p.X() * l.XScale()
 		if x > XMax {
 			XMax = x
 		}
 		if x < XMin {
 			XMin = x
 		}
-		y := p.Y() * l.header.YScale()
+		y := p.Y() * l.YScale()
 		if y > YMax {
 			YMax = x
 		}
@@ -301,20 +301,20 @@ func TestRawExtents(t *testing.T) {
 			YMin = y
 		}
 	}
-	if XMax != l.header.MaxX() {
-		t.Logf("Header x max doesn't match actual(%f != %f)", XMax, l.header.MaxX())
+	if XMax != l.MaxX() {
+		t.Logf("Header x max doesn't match actual(%f != %f)", XMax, l.MaxX())
 		t.Fail()
 	}
-	if XMin != l.header.MinX() {
-		t.Logf("Header x min doesn't match actual(%f != %f)", XMin, l.header.MinX())
+	if XMin != l.MinX() {
+		t.Logf("Header x min doesn't match actual(%f != %f)", XMin, l.MinX())
 		t.Fail()
 	}
-	if YMax != l.header.MaxY() {
-		t.Logf("Header y max doesn't match actual(%f != %f)", YMax, l.header.MaxY())
+	if YMax != l.MaxY() {
+		t.Logf("Header y max doesn't match actual(%f != %f)", YMax, l.MaxY())
 		t.Fail()
 	}
-	if YMin != l.header.MinY() {
-		t.Logf("Header y min doesn't match actual(%f != %f)", YMin, l.header.MinY())
+	if YMin != l.MinY() {
+		t.Logf("Header y min doesn't match actual(%f != %f)", YMin, l.MinY())
 		t.Fail()
 	}
 }

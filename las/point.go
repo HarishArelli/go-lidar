@@ -221,9 +221,7 @@ type pointPacket2 struct {
 }
 
 type pointFormat2 struct {
-	// Concrete
 	pointPacket2
-	// Zero fields
 	gpsTimePacket
 	nirPacket
 	wavePacket

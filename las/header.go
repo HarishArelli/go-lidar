@@ -3,6 +3,7 @@ package las
 import (
 	"encoding/binary"
 	"fmt"
+	"io"
 	"os"
 )
 
@@ -46,36 +47,36 @@ type Header interface {
 
 const versMinorOffset = 25
 
-func (las *Lasf) readHeader() (Header, error) {
+func readHeader(fin io.ReadSeeker) (Header, error) {
 	// Check minor version
-	las.fin.Seek(versMinorOffset, os.SEEK_SET)
+	fin.Seek(versMinorOffset, os.SEEK_SET)
 	var v uint8
-	err := binary.Read(las.fin, binary.LittleEndian, &v)
+	err := binary.Read(fin, binary.LittleEndian, &v)
 	if err != nil {
 		return nil, err
 	}
-	las.fin.Seek(0, os.SEEK_SET)
+	fin.Seek(0, os.SEEK_SET)
 	if err != nil {
 		return nil, err
 	}
 	switch v {
 	case 0, 1, 2:
 		var h header12
-		err = binary.Read(las.fin, binary.LittleEndian, &h)
+		err = binary.Read(fin, binary.LittleEndian, &h)
 		if err != nil {
 			return nil, err
 		}
 		return &h, nil
 	case 3:
 		var h header13
-		err = binary.Read(las.fin, binary.LittleEndian, &h)
+		err = binary.Read(fin, binary.LittleEndian, &h)
 		if err != nil {
 			return nil, err
 		}
 		return &h, nil
 	case 4:
 		var h header14
-		err = binary.Read(las.fin, binary.LittleEndian, &h)
+		err = binary.Read(fin, binary.LittleEndian, &h)
 		if err != nil {
 			return nil, err
 		}

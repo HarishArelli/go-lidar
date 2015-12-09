@@ -19,7 +19,7 @@ func (v *vlrHeader) Description() string {
 }
 
 func (las *Lasf) readVlrData() error {
-	offset := int64(las.header.HeaderSize())
+	offset := int64(las.HeaderSize())
 	las.fin.Seek(offset, os.SEEK_SET)
 	var header vlrHeader
 	err := binary.Read(las.fin, binary.LittleEndian, &header)

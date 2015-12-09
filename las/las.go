@@ -10,9 +10,9 @@ import (
 )
 
 type Lasf struct {
+	Header
 	fname  string
 	fin    io.ReadSeeker
-	header Header
 	index  uint64
 	point  Pointer
 }
@@ -34,37 +34,25 @@ func convertToUInt8(uval, start, length uint8) uint8 {
 	return c
 }
 
-func (las *Lasf) open() error {
-	fin, err := os.Open(las.fname)
-	if err != nil {
-		return err
-	}
-	las.fin = fin
-	header, err := las.readHeader()
-	if err != nil {
-		return err
-	}
-	las.header = header
-	return nil
-}
-
 func Open(filename string) (*Lasf, error) {
-	var las Lasf
-	las.fname = filename
-	err := las.open()
+	fin, err := os.Open(filename)
 	if err != nil {
 		return nil, err
 	}
-	return &las, nil
+	header, err := readHeader(fin)
+	if err != nil {
+		return nil, err
+	}
+	return &Lasf{fname: filename, fin: fin, Header: header}, nil
 }
 
 var ErrInvalidFormat = errors.New("Invalid point record format")
 var ErrInvalidIndex = errors.New("Invalid point record index")
 
 func (las *Lasf) readPoint(n uint64) (Pointer, error) {
-	offset := uint64(las.header.PointOffset()) + uint64(las.header.PointSize())*n
+	offset := uint64(las.PointOffset()) + uint64(las.PointSize())*n
 	las.fin.Seek(int64(offset), os.SEEK_SET)
-	switch las.header.PointFormat() {
+	switch las.PointFormat() {
 	case 0:
 		return las.readPointFormat0()
 	case 1:
@@ -113,8 +101,4 @@ func (las *Lasf) GetPoint(n uint64) (Pointer, error) {
 		return nil, err
 	}
 	return p, nil
-}
-
-func (las *Lasf) PointCount() uint64 {
-	return las.header.PointCount()
 }
