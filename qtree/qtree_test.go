@@ -13,7 +13,7 @@ func eightByEight4Point() *QuadTree {
 	q.Insert(3, 6, 2)
 	return q
 }
-	
+
 func TestNew(t *testing.T) {
 	_, err := New(1, 0, 10, 0, 10)
 	if err != nil {
@@ -58,4 +58,3 @@ func TestQuery2(t *testing.T) {
 		t.Fail()
 	}
 }
-
