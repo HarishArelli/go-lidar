@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func openTest(f string, t *testing.T) (*Lasf) {
+func openTest(f string, t *testing.T) *Lasf {
 	l, err := Open(f)
 	if l == nil || err != nil {
 		t.Log(err)
@@ -477,5 +477,18 @@ func TestRewind(t *testing.T) {
 	}
 	if p.RetCount() != p2.RetCount() {
 		t.Fail()
+	}
+}
+
+func BenchmarkReadAll(b *testing.B) {
+	l, err := Open("../data/xyzrgb_manuscript_detail.las")
+	if err != nil {
+		return
+	}
+	for err == nil {
+		_, err := l.GetNextPoint()
+		if err != nil {
+			break
+		}
 	}
 }
