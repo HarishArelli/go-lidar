@@ -75,49 +75,75 @@ func TestVersion(t *testing.T) {
 }
 
 /*
-func SysIdentifier(t *testing.T) {
+func TestSysIdentifier(t *testing.T) {
     l, err := Open("../data/xyzrgb_manuscript_detail.las")
     if l == nil || err != nil {
         t.FailNow()
     }
+		if string(l.SysIdentifier()[:]) != "PDAL" {
+			t.Logf("Invalid sys identifier : %s", l.SysIdentifier())
+			t.Fail()
+		}
 }
-func GenSoftware(t *testing.T) {
+
+func TestGenSoftware(t *testing.T) {
     l, err := Open("../data/xyzrgb_manuscript_detail.las")
     if l == nil || err != nil {
         t.FailNow()
     }
-}
-func CreateDOY(t *testing.T) {
-    l, err := Open("../data/xyzrgb_manuscript_detail.las")
-    if l == nil || err != nil {
-        t.FailNow()
-    }
-}
-func CreateYear(t *testing.T) {
-    l, err := Open("../data/xyzrgb_manuscript_detail.las")
-    if l == nil || err != nil {
-        t.FailNow()
-    }
-}
-func HeaderSize(t *testing.T) {
-    l, err := Open("../data/xyzrgb_manuscript_detail.las")
-    if l == nil || err != nil {
-        t.FailNow()
-    }
-}
-func PointOffset(t *testing.T) {
-    l, err := Open("../data/xyzrgb_manuscript_detail.las")
-    if l == nil || err != nil {
-        t.FailNow()
-    }
-}
-func VlrCount(t *testing.T) {
-    l, err := Open("../data/xyzrgb_manuscript_detail.las")
-    if l == nil || err != nil {
-        t.FailNow()
-    }
+		if string(l.GenSoftware()[:]) != "PDAL 9c974e46af" {
+			t.Logf("Invalid generating software: %s", l.GenSoftware())
+			t.Fail()
+		}
 }
 */
+func TestCreateDOY(t *testing.T) {
+	l, err := Open("../data/xyzrgb_manuscript_detail.las")
+	if l == nil || err != nil {
+		t.FailNow()
+	}
+	if l.CreateDOY() != 37 {
+		t.Fail()
+	}
+}
+
+func TestCreateYear(t *testing.T) {
+	l, err := Open("../data/xyzrgb_manuscript_detail.las")
+	if l == nil || err != nil {
+		t.FailNow()
+	}
+	if l.CreateYear() != 2008 {
+		t.Fail()
+	}
+}
+
+func TestHeaderSize(t *testing.T) {
+	l, err := Open("../data/xyzrgb_manuscript_detail.las")
+	if l == nil || err != nil {
+		t.FailNow()
+	}
+	if l.HeaderSize() != 227 {
+		t.Fail()
+	}
+}
+func TestPointOffset(t *testing.T) {
+	l, err := Open("../data/xyzrgb_manuscript_detail.las")
+	if l == nil || err != nil {
+		t.FailNow()
+	}
+	if l.PointOffset() != 227 {
+		t.Fail()
+	}
+}
+func TestVlrCount(t *testing.T) {
+	l, err := Open("../data/xyzrgb_manuscript_detail.las")
+	if l == nil || err != nil {
+		t.FailNow()
+	}
+	if l.VlrCount() != 0 {
+		t.Fail()
+	}
+}
 func TestPointFormat(t *testing.T) {
 	l, err := Open("../data/xyzrgb_manuscript_detail.las")
 	if l == nil || err != nil {
@@ -145,7 +171,9 @@ func TestPointCount(t *testing.T) {
 	i := 0
 	for err == nil {
 		_, err = l.GetNextPoint()
-		i++
+		if err == nil {
+			i++
+		}
 	}
 	if i != 25008 {
 		t.Logf("Read %d points, header says %d", i, l.PointCount())
@@ -321,7 +349,7 @@ func TestColorRange(t *testing.T) {
 	bMin = 255
 	bMax = 0
 
-	for i := 0; i < int(l.PointCount()-1); i++ {
+	for i := 0; i < int(l.PointCount()); i++ {
 		p, err := l.GetPoint(uint64(i))
 		if err != nil {
 			t.Log(err)
@@ -367,7 +395,7 @@ func TestRawExtents(t *testing.T) {
 	YMax := -1 * math.MaxFloat64
 	YMin := math.MaxFloat64
 
-	for i := 0; i < int(l.PointCount()-1); i++ {
+	for i := 0; i < int(l.PointCount()); i++ {
 		p, err := l.GetNextPoint()
 		if err != nil {
 			t.Log(err)
@@ -488,6 +516,38 @@ func TestPoint(t *testing.T) {
 		t.Fail()
 	}
 	if p.Z_t() < 0 {
+		t.Fail()
+	}
+}
+
+func TestRewind(t *testing.T) {
+	l, err := Open("../data/xyzrgb_manuscript_detail.las")
+	if l == nil || err != nil {
+		t.Log("Failed to open file for reading.")
+		t.FailNow()
+	}
+	p, err := l.GetNextPoint()
+	if err != nil {
+		t.FailNow()
+	}
+	l.Rewind()
+	p2, err := l.GetNextPoint()
+	if p.X() != p2.X() {
+		t.Fail()
+	}
+	if p.Y() != p2.Y() {
+		t.Fail()
+	}
+	if p.Z() != p2.Z() {
+		t.Fail()
+	}
+	if p.Intensity() != p2.Intensity() {
+		t.Fail()
+	}
+	if p.RetNum() != p2.RetNum() {
+		t.Fail()
+	}
+	if p.RetCount() != p2.RetCount() {
 		t.Fail()
 	}
 }

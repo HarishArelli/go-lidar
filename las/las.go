@@ -46,6 +46,8 @@ func Open(filename string) (*Lasf, error) {
 	if err != nil {
 		return nil, err
 	}
+	// Seek to the start of the points
+	fin.Seek(int64(header.PointOffset()), os.SEEK_SET)
 	return &Lasf{fname: filename, fin: fin, header: header}, nil
 }
 
@@ -83,17 +85,31 @@ func (las *Lasf) readPoint(n uint64) (Pointer, error) {
 	}
 }
 
+// Rewind resets the the point index to the first point in the file
 func (las *Lasf) Rewind() error {
 	las.index = 0
-	las.fin.Seek(0, os.SEEK_SET)
+	las.fin.Seek(int64(las.PointOffset()), os.SEEK_SET)
 	return nil
 }
 
+// GetNextPoint reads the next point in the file.  After the file is opened and
+// any VLRs are read into memory, the file pointer is set to the first point.
+// Each call to GetNexPoint returns the next point in the file.  This
+// sequence is interupted if GetPoint is explicitly called.  This means
+// GetNextPoint returns point n, then a call GetPoint(m), GetNextPoint will
+// return point at m+1, not n+1.  If there is an error reading the point, or if
+// we seek past the end of the points, nil and error are returned.
 func (las *Lasf) GetNextPoint() (Pointer, error) {
-	las.index++
-	return las.GetPoint(las.index)
+	p, err := las.GetPoint(las.index)
+	if err != nil {
+		las.index = 0
+	} else {
+		las.index++
+	}
+	return p, err
 }
 
+// GetPoint fetches a specific point at index n.
 func (las *Lasf) GetPoint(n uint64) (Pointer, error) {
 	if n >= las.PointCount() {
 		return nil, fmt.Errorf("Invalid point index %d", n)
