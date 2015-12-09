@@ -5,19 +5,22 @@ import (
 	"testing"
 )
 
-func TestOpen(t *testing.T) {
-	l, err := Open("../data/xyzrgb_manuscript_detail.las")
+func openTest(f string, t *testing.T) (*Lasf) {
+	l, err := Open(f)
 	if l == nil || err != nil {
+		t.Log(err)
 		t.FailNow()
 	}
+	return l
+}
 
+func TestOpen(t *testing.T) {
+	l := openTest("../data/xyzrgb_manuscript_detail.las", t)
+	_ = l
 }
 
 func TestSignature(t *testing.T) {
-	l, err := Open("../data/xyzrgb_manuscript_detail.las")
-	if l == nil || err != nil {
-		t.FailNow()
-	}
+	l := openTest("../data/xyzrgb_manuscript_detail.las", t)
 	if l.Signature() != [4]byte{'L', 'A', 'S', 'F'} {
 		t.Fail()
 	}
@@ -62,10 +65,7 @@ func ProjectID4(t *testing.T) {
 }
 */
 func TestVersion(t *testing.T) {
-	l, err := Open("../data/xyzrgb_manuscript_detail.las")
-	if l == nil || err != nil {
-		t.FailNow()
-	}
+	l := openTest("../data/xyzrgb_manuscript_detail.las", t)
 	if l.VMaj() != 1 {
 		t.Fail()
 	}
@@ -98,57 +98,39 @@ func TestGenSoftware(t *testing.T) {
 }
 */
 func TestCreateDOY(t *testing.T) {
-	l, err := Open("../data/xyzrgb_manuscript_detail.las")
-	if l == nil || err != nil {
-		t.FailNow()
-	}
+	l := openTest("../data/xyzrgb_manuscript_detail.las", t)
 	if l.CreateDOY() != 37 {
 		t.Fail()
 	}
 }
 
 func TestCreateYear(t *testing.T) {
-	l, err := Open("../data/xyzrgb_manuscript_detail.las")
-	if l == nil || err != nil {
-		t.FailNow()
-	}
+	l := openTest("../data/xyzrgb_manuscript_detail.las", t)
 	if l.CreateYear() != 2008 {
 		t.Fail()
 	}
 }
 
 func TestHeaderSize(t *testing.T) {
-	l, err := Open("../data/xyzrgb_manuscript_detail.las")
-	if l == nil || err != nil {
-		t.FailNow()
-	}
+	l := openTest("../data/xyzrgb_manuscript_detail.las", t)
 	if l.HeaderSize() != 227 {
 		t.Fail()
 	}
 }
 func TestPointOffset(t *testing.T) {
-	l, err := Open("../data/xyzrgb_manuscript_detail.las")
-	if l == nil || err != nil {
-		t.FailNow()
-	}
+	l := openTest("../data/xyzrgb_manuscript_detail.las", t)
 	if l.PointOffset() != 227 {
 		t.Fail()
 	}
 }
 func TestVlrCount(t *testing.T) {
-	l, err := Open("../data/xyzrgb_manuscript_detail.las")
-	if l == nil || err != nil {
-		t.FailNow()
-	}
+	l := openTest("../data/xyzrgb_manuscript_detail.las", t)
 	if l.VlrCount() != 0 {
 		t.Fail()
 	}
 }
 func TestPointFormat(t *testing.T) {
-	l, err := Open("../data/xyzrgb_manuscript_detail.las")
-	if l == nil || err != nil {
-		t.FailNow()
-	}
+	l := openTest("../data/xyzrgb_manuscript_detail.las", t)
 	if l.PointFormat() != 2 {
 		t.Fail()
 	}
@@ -163,12 +145,9 @@ func PointSize(t *testing.T) {
 }
 */
 func TestPointCount(t *testing.T) {
-	l, err := Open("../data/xyzrgb_manuscript_detail.las")
-	if err != nil {
-		t.Log(err)
-		t.FailNow()
-	}
+	l := openTest("../data/xyzrgb_manuscript_detail.las", t)
 	i := 0
+	var err error
 	for err == nil {
 		_, err = l.GetNextPoint()
 		if err == nil {
@@ -183,37 +162,27 @@ func TestPointCount(t *testing.T) {
 
 /*
 func PointsByReturn(t *testing.T) {
-    l, err := Open("../data/xyzrgb_manuscript_detail.las")
-    if l == nil || err != nil {
-        t.FailNow()
-    }
+	l := openTest("../data/xyzrgb_manuscript_detail.las", t)
+
 }
 */
+
 func TestXScale(t *testing.T) {
-	l, err := Open("../data/xyzrgb_manuscript_detail.las")
-	if l == nil || err != nil {
-		t.FailNow()
-	}
+	l := openTest("../data/xyzrgb_manuscript_detail.las", t)
 	if l.XScale() != 0.001 {
 		t.Fail()
 	}
 }
 
 func TestYScale(t *testing.T) {
-	l, err := Open("../data/xyzrgb_manuscript_detail.las")
-	if l == nil || err != nil {
-		t.FailNow()
-	}
+	l := openTest("../data/xyzrgb_manuscript_detail.las", t)
 	if l.YScale() != 0.001 {
 		t.Fail()
 	}
 }
 
 func TestZScale(t *testing.T) {
-	l, err := Open("../data/xyzrgb_manuscript_detail.las")
-	if l == nil || err != nil {
-		t.FailNow()
-	}
+	l := openTest("../data/xyzrgb_manuscript_detail.las", t)
 	if l.ZScale() != 0.001 {
 		t.Logf("Invalid z scale: %f", l.ZScale())
 		t.Fail()
@@ -221,28 +190,21 @@ func TestZScale(t *testing.T) {
 }
 
 func TestXOffset(t *testing.T) {
-	l, err := Open("../data/xyzrgb_manuscript_detail.las")
-	if l == nil || err != nil {
-		t.FailNow()
-	}
+	l := openTest("../data/xyzrgb_manuscript_detail.las", t)
 	if l.XOffset() != 0 {
 		t.Fail()
 	}
 }
+
 func TestYOffset(t *testing.T) {
-	l, err := Open("../data/xyzrgb_manuscript_detail.las")
-	if l == nil || err != nil {
-		t.FailNow()
-	}
+	l := openTest("../data/xyzrgb_manuscript_detail.las", t)
 	if l.YOffset() != 0 {
 		t.Fail()
 	}
 }
+
 func TestZOffset(t *testing.T) {
-	l, err := Open("../data/xyzrgb_manuscript_detail.las")
-	if l == nil || err != nil {
-		t.FailNow()
-	}
+	l := openTest("../data/xyzrgb_manuscript_detail.las", t)
 	if l.ZOffset() != 0 {
 		t.Fail()
 	}
@@ -251,48 +213,33 @@ func TestZOffset(t *testing.T) {
 // Bounds according to lasinfo.  Needs updating for epsilon float comparison.
 // Not sure if it's built in to go.
 func TestMaxX(t *testing.T) {
-	l, err := Open("../data/xyzrgb_manuscript_detail.las")
-	if l == nil || err != nil {
-		t.FailNow()
-	}
+	l := openTest("../data/xyzrgb_manuscript_detail.las", t)
 	if l.MaxX() != 10.0 {
 		t.Fail()
 	}
 }
 func TestMinX(t *testing.T) {
-	l, err := Open("../data/xyzrgb_manuscript_detail.las")
-	if l == nil || err != nil {
-		t.FailNow()
-	}
+	l := openTest("../data/xyzrgb_manuscript_detail.las", t)
 	if l.MinX() != -1.0 {
 		t.Fail()
 	}
 }
 func TestMaxY(t *testing.T) {
-	l, err := Open("../data/xyzrgb_manuscript_detail.las")
-	if l == nil || err != nil {
-		t.FailNow()
-	}
+	l := openTest("../data/xyzrgb_manuscript_detail.las", t)
 	if l.MaxY() != 9.958 {
 		t.Fail()
 	}
 }
 
 func TestMinY(t *testing.T) {
-	l, err := Open("../data/xyzrgb_manuscript_detail.las")
-	if l == nil || err != nil {
-		t.FailNow()
-	}
+	l := openTest("../data/xyzrgb_manuscript_detail.las", t)
 	if l.MinY() != -9.996 {
 		t.Fail()
 	}
 }
 
 func TestMaxZ(t *testing.T) {
-	l, err := Open("../data/xyzrgb_manuscript_detail.las")
-	if l == nil || err != nil {
-		t.FailNow()
-	}
+	l := openTest("../data/xyzrgb_manuscript_detail.las", t)
 	if l.MaxZ() != 0.181 {
 		t.Fail()
 	}
@@ -301,10 +248,7 @@ func TestMaxZ(t *testing.T) {
 func TestMinZ(t *testing.T) {
 	t.Log("Skipping due to epsilon compare failure??")
 	t.Skip()
-	l, err := Open("../data/xyzrgb_manuscript_detail.las")
-	if l == nil || err != nil {
-		t.FailNow()
-	}
+	l := openTest("../data/xyzrgb_manuscript_detail.las", t)
 	if l.MinZ() != -0.816 {
 		t.Logf("MinZ: %f", l.MinZ())
 		t.Fail()
@@ -333,11 +277,7 @@ func EvlrCount(t *testing.T) {
 */
 
 func TestColorRange(t *testing.T) {
-	l, err := Open("../data/xyzrgb_manuscript_detail.las")
-	if l == nil || err != nil {
-		t.Log("Failed to open file for reading.")
-		t.FailNow()
-	}
+	l := openTest("../data/xyzrgb_manuscript_detail.las", t)
 
 	var rMin, rMax uint16
 	var gMin, gMax uint16
@@ -384,11 +324,7 @@ func TestColorRange(t *testing.T) {
 
 func TestRawExtents(t *testing.T) {
 	t.Skip()
-	l, err := Open("../data/xyzrgb_manuscript_detail.las")
-	if l == nil || err != nil {
-		t.Log("Failed to open file for reading.")
-		t.FailNow()
-	}
+	l := openTest("../data/xyzrgb_manuscript_detail.las", t)
 
 	XMax := -1 * math.MaxFloat64
 	XMin := math.MaxFloat64
@@ -435,11 +371,7 @@ func TestRawExtents(t *testing.T) {
 }
 
 func TestPoint(t *testing.T) {
-	l, err := Open("../data/xyzrgb_manuscript_detail.las")
-	if l == nil || err != nil {
-		t.Log("Failed to open file for reading.")
-		t.FailNow()
-	}
+	l := openTest("../data/xyzrgb_manuscript_detail.las", t)
 	p, err := l.GetNextPoint()
 	if err != nil {
 		t.Log(err)
@@ -521,11 +453,7 @@ func TestPoint(t *testing.T) {
 }
 
 func TestRewind(t *testing.T) {
-	l, err := Open("../data/xyzrgb_manuscript_detail.las")
-	if l == nil || err != nil {
-		t.Log("Failed to open file for reading.")
-		t.FailNow()
-	}
+	l := openTest("../data/xyzrgb_manuscript_detail.las", t)
 	p, err := l.GetNextPoint()
 	if err != nil {
 		t.FailNow()
