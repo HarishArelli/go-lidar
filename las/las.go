@@ -10,7 +10,7 @@ import (
 )
 
 type Lasf struct {
-	Header
+	header
 	fname string
 	fin   io.ReadSeeker
 	index uint64
@@ -43,7 +43,7 @@ func Open(filename string) (*Lasf, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Lasf{fname: filename, fin: fin, Header: header}, nil
+	return &Lasf{fname: filename, fin: fin, header: header}, nil
 }
 
 var ErrInvalidFormat = errors.New("Invalid point record format")

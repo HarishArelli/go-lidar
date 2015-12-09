@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-type Header interface {
+type header interface {
 	Signature() [4]byte
 	FileSourceId() uint16
 	GlobalEncoding() uint16
@@ -47,7 +47,7 @@ type Header interface {
 
 const versMinorOffset = 25
 
-func readHeader(fin io.ReadSeeker) (Header, error) {
+func readHeader(fin io.ReadSeeker) (header, error) {
 	// Check minor version
 	fin.Seek(versMinorOffset, os.SEEK_SET)
 	var v uint8
