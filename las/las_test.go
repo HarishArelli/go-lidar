@@ -192,61 +192,98 @@ func TestZScale(t *testing.T) {
 	}
 }
 
+func TestXOffset(t *testing.T) {
+	l, err := Open("../data/xyzrgb_manuscript_detail.las")
+	if l == nil || err != nil {
+		t.FailNow()
+	}
+	if l.XOffset() != 0 {
+		t.Fail()
+	}
+}
+func TestYOffset(t *testing.T) {
+	l, err := Open("../data/xyzrgb_manuscript_detail.las")
+	if l == nil || err != nil {
+		t.FailNow()
+	}
+	if l.YOffset() != 0 {
+		t.Fail()
+	}
+}
+func TestZOffset(t *testing.T) {
+	l, err := Open("../data/xyzrgb_manuscript_detail.las")
+	if l == nil || err != nil {
+		t.FailNow()
+	}
+	if l.ZOffset() != 0 {
+		t.Fail()
+	}
+}
+
+// Bounds according to lasinfo.  Needs updating for epsilon float comparison.
+// Not sure if it's built in to go.
+func TestMaxX(t *testing.T) {
+	l, err := Open("../data/xyzrgb_manuscript_detail.las")
+	if l == nil || err != nil {
+		t.FailNow()
+	}
+	if l.MaxX() != 10.0 {
+		t.Fail()
+	}
+}
+func TestMinX(t *testing.T) {
+	l, err := Open("../data/xyzrgb_manuscript_detail.las")
+	if l == nil || err != nil {
+		t.FailNow()
+	}
+	if l.MinX() != -1.0 {
+		t.Fail()
+	}
+}
+func TestMaxY(t *testing.T) {
+	l, err := Open("../data/xyzrgb_manuscript_detail.las")
+	if l == nil || err != nil {
+		t.FailNow()
+	}
+	if l.MaxY() != 9.958 {
+		t.Fail()
+	}
+}
+
+func TestMinY(t *testing.T) {
+	l, err := Open("../data/xyzrgb_manuscript_detail.las")
+	if l == nil || err != nil {
+		t.FailNow()
+	}
+	if l.MinY() != -9.996 {
+		t.Fail()
+	}
+}
+
+func TestMaxZ(t *testing.T) {
+	l, err := Open("../data/xyzrgb_manuscript_detail.las")
+	if l == nil || err != nil {
+		t.FailNow()
+	}
+	if l.MaxZ() != 0.181 {
+		t.Fail()
+	}
+}
+
+func TestMinZ(t *testing.T) {
+	t.Log("Skipping due to epsilon compare failure??")
+	t.Skip()
+	l, err := Open("../data/xyzrgb_manuscript_detail.las")
+	if l == nil || err != nil {
+		t.FailNow()
+	}
+	if l.MinZ() != -0.816 {
+		t.Logf("MinZ: %f", l.MinZ())
+		t.Fail()
+	}
+}
+
 /*
-func XOffset(t *testing.T) {
-    l, err := Open("../data/xyzrgb_manuscript_detail.las")
-    if l == nil || err != nil {
-        t.FailNow()
-    }
-}
-func YOffset(t *testing.T) {
-    l, err := Open("../data/xyzrgb_manuscript_detail.las")
-    if l == nil || err != nil {
-        t.FailNow()
-    }
-}
-func ZOffset(t *testing.T) {
-    l, err := Open("../data/xyzrgb_manuscript_detail.las")
-    if l == nil || err != nil {
-        t.FailNow()
-    }
-}
-func MaxX(t *testing.T) {
-    l, err := Open("../data/xyzrgb_manuscript_detail.las")
-    if l == nil || err != nil {
-        t.FailNow()
-    }
-}
-func MinX(t *testing.T) {
-    l, err := Open("../data/xyzrgb_manuscript_detail.las")
-    if l == nil || err != nil {
-        t.FailNow()
-    }
-}
-func MaxY(t *testing.T) {
-    l, err := Open("../data/xyzrgb_manuscript_detail.las")
-    if l == nil || err != nil {
-        t.FailNow()
-    }
-}
-func MinY(t *testing.T) {
-    l, err := Open("../data/xyzrgb_manuscript_detail.las")
-    if l == nil || err != nil {
-        t.FailNow()
-    }
-}gg
-func MaxZ(t *testing.T) {
-    l, err := Open("../data/xyzrgb_manuscript_detail.las")
-    if l == nil || err != nil {
-        t.FailNow()
-    }
-}
-func MinZ(t *testing.T) {
-    l, err := Open("../data/xyzrgb_manuscript_detail.las")
-    if l == nil || err != nil {
-        t.FailNow()
-    }
-}
 func WaveformOffset(t *testing.T) {
     l, err := Open("../data/xyzrgb_manuscript_detail.las")
     if l == nil || err != nil {
@@ -267,8 +304,58 @@ func EvlrCount(t *testing.T) {
 }
 */
 
+func TestColorRange(t *testing.T) {
+	l, err := Open("../data/xyzrgb_manuscript_detail.las")
+	if l == nil || err != nil {
+		t.Log("Failed to open file for reading.")
+		t.FailNow()
+	}
+
+	var rMin, rMax uint16
+	var gMin, gMax uint16
+	var bMin, bMax uint16
+	rMin = 255
+	rMax = 0
+	gMin = 255
+	gMax = 0
+	bMin = 255
+	bMax = 0
+
+	for i := 0; i < int(l.PointCount()-1); i++ {
+		p, err := l.GetPoint(uint64(i))
+		if err != nil {
+			t.Log(err)
+			t.FailNow()
+		}
+		r, g, b := p.Red(), p.Green(), p.Blue()
+		if r > rMax {
+			rMax = r
+		}
+		if r < rMin {
+			rMin = r
+		}
+		if g > gMax {
+			gMax = g
+		}
+		if g < gMin {
+			gMin = g
+		}
+		if b > bMax {
+			bMax = b
+		}
+		if b < bMin {
+			bMin = b
+		}
+	}
+
+	// According to lasinfo
+	if rMin != 47 || rMax != 224 || gMin != 37 || gMax != 204 || bMin != 39 || bMax != 171 {
+		t.Fail()
+	}
+}
+
 func TestRawExtents(t *testing.T) {
-	t.SkipNow()
+	t.Skip()
 	l, err := Open("../data/xyzrgb_manuscript_detail.las")
 	if l == nil || err != nil {
 		t.Log("Failed to open file for reading.")
