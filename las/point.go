@@ -59,14 +59,14 @@ RecordFormat() for each concrete type.
 */
 
 // Base types
-type gpsTimePacket float64
+type GpsTimePacket float64
 
-func (gps gpsTimePacket) GpsTime() float64 {
+func (gps GpsTimePacket) GpsTime() float64 {
 	return float64(gps)
 }
 
-func (gps *gpsTimePacket) SetGpsTime(t float64) {
-	*gps = gpsTimePacket(t)
+func (gps *GpsTimePacket) SetGpsTime(t float64) {
+	*gps = GpsTimePacket(t)
 }
 
 type rgbPacket struct {
@@ -205,7 +205,7 @@ type pointFormat0 struct {
 	// Concrete
 	pointPacket0
 	// Zero fields
-	gpsTimePacket
+	GpsTimePacket
 	rgbPacket
 	nirPacket
 	wavePacket
@@ -217,7 +217,7 @@ func (p *pointFormat0) RecordFormat() uint8 {
 
 type pointPacket1 struct {
 	pointPacket0
-	gpsTimePacket
+	GpsTimePacket
 }
 
 type pointFormat1 struct {
@@ -238,7 +238,7 @@ type pointPacket2 struct {
 
 type pointFormat2 struct {
 	pointPacket2
-	gpsTimePacket
+	GpsTimePacket
 	nirPacket
 	wavePacket
 }
@@ -249,7 +249,7 @@ func (p *pointFormat2) RecordFormat() uint8 {
 
 type pointPacket3 struct {
 	pointPacket0
-	gpsTimePacket
+	GpsTimePacket
 	rgbPacket
 }
 
@@ -361,7 +361,7 @@ type pointPacket6 struct {
 	UserData_       uint8
 	ScanAngle_      int16
 	PointSourceId_  uint16
-	gpsTimePacket
+	GpsTimePacket
 }
 
 func (p *pointPacket6) RecordFormat() uint8 {
