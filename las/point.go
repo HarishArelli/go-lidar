@@ -137,7 +137,7 @@ func (w *wavePacket) Z_t() float32 {
 }
 
 type pointPacket0 struct {
-	X_, Y_, Z_ uint32
+	X_, Y_, Z_ int32
 	Intensity_ uint16
 	// Return Number 0-2
 	// Number of returns 3-5
@@ -347,7 +347,7 @@ func (las *Lasf) readPointFormat5() (Pointer, error) {
 }
 
 type pointPacket6 struct {
-	X_, Y_, Z_ uint32
+	X_, Y_, Z_ int32
 	Intensity_ uint16
 	// Return Number 0-4
 	// Number of returns 4-7
