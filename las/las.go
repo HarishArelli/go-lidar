@@ -2,7 +2,6 @@
 // All rights reserved.  Use of this source code is governed by the MIT
 // license that can be found in the LICENSE file.
 
-
 package las
 
 import (
@@ -14,12 +13,22 @@ import (
 	"os"
 )
 
+type filter struct {
+	xmin, xmax, ymin, ymax float64
+}
+
+func (f filter) contains(x, y float64) bool {
+	c := x > f.xmin && x < f.xmax && y > f.ymin && y < f.ymax
+	return c
+}
+
 type Lasf struct {
 	header
 	fname string
 	fin   io.ReadSeeker
 	index uint64
 	point Pointer
+	filter
 }
 
 var dbg *log.Logger
@@ -53,7 +62,8 @@ func Open(filename string) (*Lasf, error) {
 	}
 	// Seek to the start of the points
 	fin.Seek(int64(header.PointOffset()), os.SEEK_SET)
-	return &Lasf{fname: filename, fin: fin, header: header}, nil
+	filt := filter{-1 * math.MaxFloat64, math.MaxFloat64, -1 * math.MaxFloat64, math.MaxFloat64}
+	return &Lasf{fname: filename, fin: fin, header: header, filter: filt}, nil
 }
 
 var ErrInvalidFormat = errors.New("Invalid point record format")
@@ -108,8 +118,11 @@ func (las *Lasf) GetNextPoint() (Pointer, error) {
 	p, err := las.GetPoint(las.index)
 	if err != nil {
 		las.index = 0
-	} else {
-		las.index++
+		return p, err
+	}
+	las.index++
+	if !las.contains(p.X()*las.XScale(), p.Y()*las.YScale()) {
+		return las.GetNextPoint()
 	}
 	return p, err
 }
@@ -125,4 +138,17 @@ func (las *Lasf) GetPoint(n uint64) (Pointer, error) {
 		return nil, err
 	}
 	return p, nil
+}
+
+func (las *Lasf) SetFilter(xmin, xmax, ymin, ymax float64) {
+	las.xmin = xmin
+	las.xmax = xmax
+	las.ymin = ymin
+	las.ymax = ymax
+	las.Rewind()
+}
+
+func (las *Lasf) ClearFilter() {
+	las.SetFilter(-1*math.MaxFloat64, math.MaxFloat64, -1*math.MaxFloat64, math.MaxFloat64)
+	las.Rewind()
 }

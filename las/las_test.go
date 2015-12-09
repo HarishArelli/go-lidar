@@ -2,7 +2,6 @@
 // All rights reserved.  Use of this source code is governed by the MIT
 // license that can be found in the LICENSE file.
 
-
 package las
 
 import (
@@ -482,6 +481,22 @@ func TestRewind(t *testing.T) {
 	}
 	if p.RetCount() != p2.RetCount() {
 		t.Fail()
+	}
+}
+
+func TestFilter(t *testing.T) {
+	l := openTest("../data/xyzrgb_manuscript_detail.las", t)
+	l.SetFilter(0, 0, 0, 0)
+	p, err := l.GetNextPoint()
+	if p != nil || err == nil {
+		t.Log("Spatial filter failed")
+		t.FailNow()
+	}
+	l.ClearFilter()
+	p, err = l.GetNextPoint()
+	if p == nil || err != nil {
+		t.Log("Unsetting spatial filter failed")
+		t.FailNow()
 	}
 }
 
