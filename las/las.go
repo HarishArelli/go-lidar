@@ -11,6 +11,8 @@ import (
 	"log"
 	"math"
 	"os"
+
+	"github.com/bcal-lidar/go-lidar/qtree"
 )
 
 type filter struct {
@@ -29,6 +31,9 @@ type Lasf struct {
 	index uint64
 	point Pointer
 	filter
+	qt *qtree.QuadTree
+	qids []uint64
+	qid uint64
 }
 
 var dbg *log.Logger
@@ -115,16 +120,27 @@ func (las *Lasf) Rewind() error {
 // return point at m+1, not n+1.  If there is an error reading the point, or if
 // we seek past the end of the points, nil and error are returned.
 func (las *Lasf) GetNextPoint() (Pointer, error) {
-	p, err := las.GetPoint(las.index)
-	if err != nil {
-		las.index = 0
-		return p, err
+	i := uint64(0)
+	for {
+		if las.qt != nil && las.qids != nil {
+			i = las.qids[las.qid]
+			if int(i) > len(las.qids) {
+				las.qid = 0
+				return nil, ErrInvalidIndex
+			}
+			las.qid++
+		} else {
+			i = las.index
+			las.index++
+		}
+		p, err := las.GetPoint(i)
+		if err != nil {
+			return p, err
+		}
+		if las.contains(p.X()*las.XScale(), p.Y()*las.YScale()) {
+			return p, nil
+		}
 	}
-	las.index++
-	if !las.contains(p.X()*las.XScale(), p.Y()*las.YScale()) {
-		return las.GetNextPoint()
-	}
-	return p, err
 }
 
 // GetPoint fetches a specific point at index n.
@@ -132,7 +148,6 @@ func (las *Lasf) GetPoint(n uint64) (Pointer, error) {
 	if n >= las.PointCount() {
 		return nil, fmt.Errorf("Invalid point index %d", n)
 	}
-	las.index = n
 	p, err := las.readPoint(n)
 	if err != nil {
 		return nil, err
@@ -146,9 +161,36 @@ func (las *Lasf) SetFilter(xmin, xmax, ymin, ymax float64) {
 	las.ymin = ymin
 	las.ymax = ymax
 	las.Rewind()
+	if las.qt != nil {
+		las.qids = las.qt.Query(xmin, xmax, ymin, ymax)
+	}
+	las.qid = 0
 }
 
 func (las *Lasf) ClearFilter() {
 	las.SetFilter(-1*math.MaxFloat64, math.MaxFloat64, -1*math.MaxFloat64, math.MaxFloat64)
 	las.Rewind()
+	las.qids = nil
+	las.qid = 0
 }
+
+func (las *Lasf) BuildQuadTree() {
+	las.ClearFilter()
+	n := uint64(float64(las.PointCount() / 10.0))
+	qt, err := qtree.New(n, las.MinX(), las.MaxX(), las.MinY(), las.MaxY())
+	if err != nil {
+		return
+	}
+	i := uint64(0)
+	for ;; {
+		p, err := las.GetNextPoint()
+		if err != nil {
+			break;
+		}
+		qt.Insert(i, p.X() * las.XScale(), p.Y() * las.YScale())
+		i++
+	}
+	las.qid = 0
+	las.qt = qt
+}
+

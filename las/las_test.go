@@ -11,7 +11,7 @@ import (
 
 const (
 	small = "../data/xyzrgb_manuscript_detail.las"
-	helen = "/home/kyle/Desktop/lidar/st-helens.las"
+	helen = "/home/kyle/Desktop/lidar/liblas_samples/libLAS_1.2.las"
 )
 
 func openTest(f string, t *testing.T) *Lasf {
@@ -437,13 +437,33 @@ func BenchmarkReadAll(b *testing.B) {
 }
 
 func BenchmarkNormalFilter(b *testing.B) {
-	l, err := Open(small)
+	l, err := Open(helen)
 	if err != nil {
 		return
 	}
 	xbuf := (l.MaxX() - l.MinX()) * 0.1
 	ybuf := (l.MaxY() - l.MinY()) * 0.1
 	x, y := (l.MaxX()-l.MinX())/2, (l.MaxY()-l.MinY())/2
+	l.SetFilter(x-xbuf, x+xbuf, y-ybuf, y+ybuf)
+	i := 0
+	for {
+		_, err := l.GetNextPoint()
+		if err != nil {
+			break
+		}
+		i++
+	}
+}
+
+func BenchmarkQuadFilter(b *testing.B) {
+	l, err := Open(helen)
+	if err != nil {
+		return
+	}
+	xbuf := (l.MaxX() - l.MinX()) * 0.1
+	ybuf := (l.MaxY() - l.MinY()) * 0.1
+	x, y := (l.MaxX()-l.MinX())/2, (l.MaxY()-l.MinY())/2
+	l.BuildQuadTree()
 	l.SetFilter(x-xbuf, x+xbuf, y-ybuf, y+ybuf)
 	i := 0
 	for {
