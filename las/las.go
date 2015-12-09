@@ -31,9 +31,9 @@ type Lasf struct {
 	index uint64
 	point Pointer
 	filter
-	qt *qtree.QuadTree
+	qt   *qtree.QuadTree
 	qids []uint64
-	qid uint64
+	qid  uint64
 }
 
 var dbg *log.Logger
@@ -182,15 +182,14 @@ func (las *Lasf) BuildQuadTree() {
 		return
 	}
 	i := uint64(0)
-	for ;; {
+	for {
 		p, err := las.GetNextPoint()
 		if err != nil {
-			break;
+			break
 		}
-		qt.Insert(i, p.X() * las.XScale(), p.Y() * las.YScale())
+		qt.Insert(i, p.X()*las.XScale(), p.Y()*las.YScale())
 		i++
 	}
 	las.qid = 0
 	las.qt = qt
 }
-

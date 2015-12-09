@@ -11,7 +11,6 @@ import (
 
 const (
 	small = "../data/xyzrgb_manuscript_detail.las"
-	helen = "/home/kyle/Desktop/lidar/liblas_samples/libLAS_1.2.las"
 )
 
 func openTest(f string, t *testing.T) *Lasf {
@@ -437,7 +436,7 @@ func BenchmarkReadAll(b *testing.B) {
 }
 
 func BenchmarkNormalFilter(b *testing.B) {
-	l, err := Open(helen)
+	l, err := Open(small)
 	if err != nil {
 		return
 	}
@@ -456,7 +455,7 @@ func BenchmarkNormalFilter(b *testing.B) {
 }
 
 func BenchmarkQuadFilter(b *testing.B) {
-	l, err := Open(helen)
+	l, err := Open(small)
 	if err != nil {
 		return
 	}
