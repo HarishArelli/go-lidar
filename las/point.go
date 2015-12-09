@@ -61,6 +61,10 @@ func (gps gpsTimePacket) GpsTime() float64 {
 	return float64(gps)
 }
 
+func (gps *gpsTimePacket) SetGpsTime(t float64) {
+	*gps = gpsTimePacket(t)
+}
+
 type rgbPacket struct {
 	Red_, Green_, Blue_ uint16
 }
@@ -77,10 +81,18 @@ func (rgb *rgbPacket) Blue() uint16 {
 	return rgb.Blue_
 }
 
+func (rgb *rgbPacket) SetRGB(r, g, b uint16) {
+	rgb.Red_, rgb.Green_, rgb.Blue_ = r, g, b
+}
+
 type nirPacket uint16
 
 func (n nirPacket) NIR() uint16 {
 	return uint16(n)
+}
+
+func (nir *nirPacket) SetNIR(n uint16) {
+	*nir = nirPacket(n)
 }
 
 // Encapsulate the waveform packet description

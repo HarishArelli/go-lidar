@@ -34,6 +34,9 @@ func convertToUInt8(uval, start, length uint8) uint8 {
 	return c
 }
 
+// Open attempts to open filename and read the LASF header.  If the file is not
+// a valid LASF file, or it cannot be opened, nil and the associated error is
+// returned.
 func Open(filename string) (*Lasf, error) {
 	fin, err := os.Open(filename)
 	if err != nil {
