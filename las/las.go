@@ -105,7 +105,7 @@ func (las *Lasf) GetNextPoint() (Pointer, error) {
 
 func (las *Lasf) GetPoint(n uint64) (Pointer, error) {
 	if n >= las.PointCount() {
-        return nil, fmt.Errorf("Invalid point index %d", n)
+		return nil, fmt.Errorf("Invalid point index %d", n)
 	}
 	las.index = n
 	p, err := las.readPoint(n)
