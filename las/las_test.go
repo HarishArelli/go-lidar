@@ -156,24 +156,38 @@ func PointsByReturn(t *testing.T) {
         t.FailNow()
     }
 }
-func XScale(t *testing.T) {
+*/
+func TestXScale(t *testing.T) {
     l, err := Open("../data/xyzrgb_manuscript_detail.las")
     if l == nil || err != nil {
         t.FailNow()
     }
+    if l.header.XScale() != 0.001 {
+        t.Fail()
+    }
 }
-func YScale(t *testing.T) {
+
+func TestYScale(t *testing.T) {
     l, err := Open("../data/xyzrgb_manuscript_detail.las")
     if l == nil || err != nil {
         t.FailNow()
     }
+    if l.header.YScale() != 0.001 {
+        t.Fail()
+    }
 }
-func ZScale(t *testing.T) {
+
+func TestZScale(t *testing.T) {
     l, err := Open("../data/xyzrgb_manuscript_detail.las")
     if l == nil || err != nil {
         t.FailNow()
     }
+    if l.header.ZScale() != 0.001 {
+        t.Logf("Invalid z scale: %f", l.header.ZScale())
+        t.Fail()
+    }
 }
+/*
 func XOffset(t *testing.T) {
     l, err := Open("../data/xyzrgb_manuscript_detail.las")
     if l == nil || err != nil {
