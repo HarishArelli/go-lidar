@@ -490,12 +490,15 @@ func BenchmarkReadAll(b *testing.B) {
 	}
 }
 
+const rounds = 5
+
 func BenchmarkNormalFilter(b *testing.B) {
 	l, err := Open(small)
 	if err != nil {
 		return
 	}
-	for i := 0; i < 5; i++ {
+	var points [rounds] int
+	for i := 0; i < rounds; i++ {
 		x, y := (l.MaxX()-l.MinX())/2, (l.MaxY()-l.MinY())/2
 		xbuf := (l.MaxX() - l.MinX()) * 0.01 * float64(i)
 		ybuf := (l.MaxY() - l.MinY()) * 0.01 * float64(i)
@@ -508,6 +511,12 @@ func BenchmarkNormalFilter(b *testing.B) {
 			}
 			f++
 		}
+		points[i] = f
+	}
+	for i := 1; i < rounds; i++ {
+		if points[i-1] > points[i] {
+			b.Fail()
+		}
 	}
 }
 
@@ -517,7 +526,8 @@ func BenchmarkQuadFilter(b *testing.B) {
 		return
 	}
 	l.BuildQuadTree()
-	for i := 0; i < 5; i++ {
+	var points [rounds] int
+	for i := 0; i < rounds; i++ {
 		x, y := (l.MaxX()-l.MinX())/2, (l.MaxY()-l.MinY())/2
 		xbuf := (l.MaxX() - l.MinX()) * 0.01 * float64(i)
 		ybuf := (l.MaxY() - l.MinY()) * 0.01 * float64(i)
@@ -529,6 +539,12 @@ func BenchmarkQuadFilter(b *testing.B) {
 				break
 			}
 			f++
+		}
+		points[i] = f
+	}
+	for i := 1; i < rounds; i++ {
+		if points[i-1] > points[i] {
+			b.Fail()
 		}
 	}
 }
