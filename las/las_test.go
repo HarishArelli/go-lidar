@@ -428,9 +428,9 @@ func TestFilter2(t *testing.T) {
 	for {
 		_, err := l.GetNextPoint()
 		if err != nil {
-			break;
+			break
 		}
-		i++;
+		i++
 	}
 	xbuf := (l.MaxX() - l.MinX()) * 0.1
 	ybuf := (l.MaxY() - l.MinY()) * 0.1
@@ -456,9 +456,9 @@ func TestQuadFilter(t *testing.T) {
 	for {
 		_, err := l.GetNextPoint()
 		if err != nil {
-			break;
+			break
 		}
-		i++;
+		i++
 	}
 	xbuf := (l.MaxX() - l.MinX()) * 0.1
 	ybuf := (l.MaxY() - l.MinY()) * 0.1
@@ -497,7 +497,7 @@ func BenchmarkNormalFilter(b *testing.B) {
 	if err != nil {
 		return
 	}
-	var points [rounds] int
+	var points [rounds]int
 	for i := 0; i < rounds; i++ {
 		x, y := (l.MaxX()-l.MinX())/2, (l.MaxY()-l.MinY())/2
 		xbuf := (l.MaxX() - l.MinX()) * 0.01 * float64(i)
@@ -526,7 +526,7 @@ func BenchmarkQuadFilter(b *testing.B) {
 		return
 	}
 	l.BuildQuadTree()
-	var points [rounds] int
+	var points [rounds]int
 	for i := 0; i < rounds; i++ {
 		x, y := (l.MaxX()-l.MinX())/2, (l.MaxY()-l.MinY())/2
 		xbuf := (l.MaxX() - l.MinX()) * 0.01 * float64(i)

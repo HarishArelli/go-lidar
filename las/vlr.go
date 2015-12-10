@@ -11,4 +11,3 @@ type vlrHeader struct {
 	RecordLength_ uint16
 	Description_  [32]byte
 }
-
