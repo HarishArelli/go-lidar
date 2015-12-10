@@ -2,6 +2,7 @@
 // All rights reserved.  Use of this source code is governed by the MIT
 // license that can be found in the LICENSE file.
 
+// Package qtree implements a very simple QuadTree for spatial searching.
 package qtree
 
 import (
@@ -64,6 +65,8 @@ type QuadTree struct {
 	nw, ne, sw, se *QuadTree
 }
 
+// New returns a usable QuadTree with a capacity at each node of capacity.  It
+// covers the extent defined by xmin, xmax, ymin, ymax
 func New(capacity uint64, xmin, xmax, ymin, ymax float64) (*QuadTree, error) {
 	if capacity < 1 {
 		return nil, fmt.Errorf("Capacity must be greater than 0")
@@ -72,6 +75,8 @@ func New(capacity uint64, xmin, xmax, ymin, ymax float64) (*QuadTree, error) {
 	return &QuadTree{capacity: capacity, envelope: env}, nil
 }
 
+// Insert adds a point to the QuadTree.  The point consists of an x, y
+// coordinate and an id, which is assumed to be unique.
 func (q *QuadTree) Insert(i uint64, x, y float64) bool {
 	p := point{i, x, y}
 	if !q.contains(p) {
@@ -107,6 +112,9 @@ func (q *QuadTree) Insert(i uint64, x, y float64) bool {
 	panic("NEVER") // Point not in envelope?
 }
 
+// Query returns a list of unique ids of points that lie within pages that
+// intersect the minimum bounding rectangle defined by xmin, xmax, ymin, ymax.
+// Note that some points will not intersect the MBR exactly.
 func (q *QuadTree) Query(xmin, xmax, ymin, ymax float64) []uint64 {
 	var points []uint64
 	qenv := envelope{xmin, xmax, ymin, ymax}
