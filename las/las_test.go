@@ -422,6 +422,61 @@ func TestFilter(t *testing.T) {
 	}
 }
 
+func TestFilter2(t *testing.T) {
+	l := openTest(small, t)
+	i := 0
+	for {
+		_, err := l.GetNextPoint()
+		if err != nil {
+			break;
+		}
+		i++;
+	}
+	xbuf := (l.MaxX() - l.MinX()) * 0.1
+	ybuf := (l.MaxY() - l.MinY()) * 0.1
+	x, y := (l.MaxX()-l.MinX())/2, (l.MaxY()-l.MinY())/2
+	l.Rewind()
+	l.SetFilter(x-xbuf, x+xbuf, y-ybuf, y+ybuf)
+	f := 0
+	for {
+		_, err := l.GetNextPoint()
+		if err != nil {
+			break
+		}
+		f++
+	}
+	if f >= i {
+		t.Fail()
+	}
+}
+
+func TestQuadFilter(t *testing.T) {
+	l := openTest(small, t)
+	i := 0
+	for {
+		_, err := l.GetNextPoint()
+		if err != nil {
+			break;
+		}
+		i++;
+	}
+	xbuf := (l.MaxX() - l.MinX()) * 0.1
+	ybuf := (l.MaxY() - l.MinY()) * 0.1
+	x, y := (l.MaxX()-l.MinX())/2, (l.MaxY()-l.MinY())/2
+	l.BuildQuadTree()
+	l.SetFilter(x-xbuf, x+xbuf, y-ybuf, y+ybuf)
+	f := 0
+	for {
+		_, err := l.GetNextPoint()
+		if err != nil {
+			break
+		}
+		f++
+	}
+	if f >= i {
+		t.Fail()
+	}
+}
 func BenchmarkReadAll(b *testing.B) {
 	l, err := Open(small)
 	if err != nil {
@@ -440,17 +495,19 @@ func BenchmarkNormalFilter(b *testing.B) {
 	if err != nil {
 		return
 	}
-	xbuf := (l.MaxX() - l.MinX()) * 0.1
-	ybuf := (l.MaxY() - l.MinY()) * 0.1
-	x, y := (l.MaxX()-l.MinX())/2, (l.MaxY()-l.MinY())/2
-	l.SetFilter(x-xbuf, x+xbuf, y-ybuf, y+ybuf)
-	i := 0
-	for {
-		_, err := l.GetNextPoint()
-		if err != nil {
-			break
+	for i := 0; i < 5; i++ {
+		x, y := (l.MaxX()-l.MinX())/2, (l.MaxY()-l.MinY())/2
+		xbuf := (l.MaxX() - l.MinX()) * 0.01 * float64(i)
+		ybuf := (l.MaxY() - l.MinY()) * 0.01 * float64(i)
+		l.SetFilter(x-xbuf, x+xbuf, y-ybuf, y+ybuf)
+		f := 0
+		for {
+			_, err := l.GetNextPoint()
+			if err != nil {
+				break
+			}
+			f++
 		}
-		i++
 	}
 }
 
@@ -459,17 +516,19 @@ func BenchmarkQuadFilter(b *testing.B) {
 	if err != nil {
 		return
 	}
-	xbuf := (l.MaxX() - l.MinX()) * 0.1
-	ybuf := (l.MaxY() - l.MinY()) * 0.1
-	x, y := (l.MaxX()-l.MinX())/2, (l.MaxY()-l.MinY())/2
 	l.BuildQuadTree()
-	l.SetFilter(x-xbuf, x+xbuf, y-ybuf, y+ybuf)
-	i := 0
-	for {
-		_, err := l.GetNextPoint()
-		if err != nil {
-			break
+	for i := 0; i < 5; i++ {
+		x, y := (l.MaxX()-l.MinX())/2, (l.MaxY()-l.MinY())/2
+		xbuf := (l.MaxX() - l.MinX()) * 0.01 * float64(i)
+		ybuf := (l.MaxY() - l.MinY()) * 0.01 * float64(i)
+		l.SetFilter(x-xbuf, x+xbuf, y-ybuf, y+ybuf)
+		f := 0
+		for {
+			_, err := l.GetNextPoint()
+			if err != nil {
+				break
+			}
+			f++
 		}
-		i++
 	}
 }
