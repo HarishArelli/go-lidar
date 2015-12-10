@@ -49,7 +49,7 @@ type pulseDescVlr struct {
 type sampleRecordVlr struct {
 	Size            uint32
 	_               uint32
-	Type            uint8
+	Type            uint8 // 1 -> outgoing, 2 -> returning
 	Channel         uint8
 	_               uint8
 	BitsDurAnchor   uint8

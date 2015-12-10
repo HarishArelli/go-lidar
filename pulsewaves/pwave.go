@@ -20,7 +20,6 @@ type PulseWave struct {
 	// Various vlr information
 	pulseDescriptors []pulseDescriptor
 
-
 	p *pulse
 }
 
@@ -56,5 +55,3 @@ func (p *PulseWave) ReadPoint(i uint64) error {
 	fmt.Printf("%+v\n", p.pulseDescriptors[pu.DescriptorIndex])
 	return nil
 }
-
-

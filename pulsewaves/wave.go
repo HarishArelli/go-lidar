@@ -1,3 +1,4 @@
 package pulsewaves
 
-type waveSample []byte
+type wave struct {
+}

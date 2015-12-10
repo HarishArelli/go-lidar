@@ -47,12 +47,14 @@ type vlrHeader struct {
 	Description  [64]byte
 }
 
+const avlrHeaderSize = 96
+
 type avlrHeader struct {
-	UserId       [16]byte
-	RecordId     uint32
-	_            uint32 // Reserved
-	RecordLength uint64
-	Description  [64]byte
+	UserId             [16]byte
+	RecordId           uint32
+	_                  uint32 // Reserved
+	RecordLengthBefore uint64
+	Description        [64]byte
 }
 
 var wvsSignature = [15]byte{'P', 'u', 'l', 's', 'e',

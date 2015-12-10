@@ -40,11 +40,16 @@ func Open(filename string) (*PulseWave, error) {
 
 	err = p.readHeader()
 	if err != nil {
-		return nil, err;
+		return nil, err
 	}
 	err = p.readVlrs()
 	if err != nil {
-		return nil, err;
+		return nil, err
+	}
+
+	err = p.readAvlrs()
+	if err != nil {
+		return nil, err
 	}
 
 	return &p, nil
