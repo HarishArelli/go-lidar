@@ -6,6 +6,7 @@ package las
 
 import (
 	"math"
+	"strings"
 	"testing"
 )
 
@@ -34,44 +35,49 @@ func TestSignature(t *testing.T) {
 	}
 }
 
-/*
 func TestFileSourceId(t *testing.T) {
-    l, err := Open(small)
-    if l == nil || err != nil {
-        t.FailNow()
-    }
+	l := openTest(small, t)
+	if l.FileSourceId() != 0 {
+		t.FailNow()
+	}
 }
-func GlobalEncoding(t *testing.T) {
-    l, err := Open(small)
-    if l == nil || err != nil {
-        t.FailNow()
-    }
+
+func TestGlobalEncoding(t *testing.T) {
+	l := openTest(small, t)
+	if l.GlobalEncoding() != 0 {
+		t.FailNow()
+	}
 }
-func ProjectID1(t *testing.T) {
-    l, err := Open(small)
-    if l == nil || err != nil {
-        t.FailNow()
-    }
+
+func TestProjectID1(t *testing.T) {
+	l := openTest(small, t)
+	if l.ProjectID1() != 0 {
+		t.FailNow()
+	}
 }
-func ProjectID2(t *testing.T) {
-    l, err := Open(small)
-    if l == nil || err != nil {
-        t.FailNow()
-    }
+
+func TestProjectID2(t *testing.T) {
+	l := openTest(small, t)
+	if l.ProjectID2() != 0 {
+		t.FailNow()
+	}
 }
-func ProjectID3(t *testing.T) {
-    l, err := Open(small)
-    if l == nil || err != nil {
-        t.FailNow()
-    }
+
+func TestProjectID3(t *testing.T) {
+	l := openTest(small, t)
+	if l.ProjectID3() != 0 {
+		t.FailNow()
+	}
 }
-func ProjectID4(t *testing.T) {
-    l, err := Open(small)
-    if l == nil || err != nil {
-        t.FailNow()
-    }
+
+func TestProjectID4(t *testing.T) {
+	t.Skip()
+	l := openTest(small, t)
+	if l.ProjectID4() != [8]byte{'0', '0', '0', '0', '0', '0', '0', '0'} {
+		t.FailNow()
+	}
 }
-*/
+
 func TestVersion(t *testing.T) {
 	l := openTest(small, t)
 	if l.VMaj() != 1 {
@@ -82,29 +88,24 @@ func TestVersion(t *testing.T) {
 	}
 }
 
-/*
 func TestSysIdentifier(t *testing.T) {
-    l, err := Open(small)
-    if l == nil || err != nil {
-        t.FailNow()
-    }
-		if string(l.SysIdentifier()[:]) != "PDAL" {
-			t.Logf("Invalid sys identifier : %s", l.SysIdentifier())
-			t.Fail()
-		}
+	l := openTest(small, t)
+	raw := l.SysIdentifier()
+	si := string(raw[:])
+	if !strings.HasPrefix(si, "point data of Vellum manuscript") {
+		t.FailNow()
+	}
 }
 
 func TestGenSoftware(t *testing.T) {
-    l, err := Open(small)
-    if l == nil || err != nil {
-        t.FailNow()
-    }
-		if string(l.GenSoftware()[:]) != "PDAL 9c974e46af" {
-			t.Logf("Invalid generating software: %s", l.GenSoftware())
-			t.Fail()
-		}
+	l := openTest(small, t)
+	raw := l.GenSoftware()
+	gs := string(raw[:])
+	if !strings.HasPrefix(gs, "lastools LAS format 1.2 test") {
+		t.FailNow()
+	}
 }
-*/
+
 func TestCreateDOY(t *testing.T) {
 	l := openTest(small, t)
 	if l.CreateDOY() != 37 {
@@ -144,14 +145,6 @@ func TestPointFormat(t *testing.T) {
 	}
 }
 
-/*
-func PointSize(t *testing.T) {
-    l, err := Open(small)
-    if l == nil || err != nil {
-        t.FailNow()
-    }
-}
-*/
 func TestPointCount(t *testing.T) {
 	l := openTest(small, t)
 	i := 0
