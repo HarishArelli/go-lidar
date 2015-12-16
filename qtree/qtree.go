@@ -101,16 +101,16 @@ func (q *QuadTree) Insert(i uint64, x, y float64) bool {
 		env = q.seQuad()
 		q.se = &QuadTree{capacity: q.capacity, envelope: env}
 	}
-	if (q.nw).Insert(i, p.x, p.y) {
+	if q.nw.Insert(i, p.x, p.y) {
 		return true
 	}
-	if (q.ne).Insert(i, p.x, p.y) {
+	if q.ne.Insert(i, p.x, p.y) {
 		return true
 	}
-	if (q.sw).Insert(i, p.x, p.y) {
+	if q.sw.Insert(i, p.x, p.y) {
 		return true
 	}
-	if (q.se).Insert(i, p.x, p.y) {
+	if q.se.Insert(i, p.x, p.y) {
 		return true
 	}
 	panic("Failed to insert into tree")
