@@ -6,6 +6,7 @@ package las
 
 import (
 	"math"
+	"os"
 	"strings"
 	"testing"
 )
@@ -59,6 +60,20 @@ func TestOpen(t *testing.T) {
 
 func TestOpenFail(t *testing.T) {
 	l, err := Open("")
+	if l != nil || err == nil {
+		t.Fail()
+	}
+}
+
+func TestOpenFail2(t *testing.T) {
+	l, err := Open("./las_test.go")
+	if l != nil || err == nil {
+		t.Fail()
+	}
+}
+
+func TestOpenFail3(t *testing.T) {
+	l, err := Open(os.DevNull)
 	if l != nil || err == nil {
 		t.Fail()
 	}

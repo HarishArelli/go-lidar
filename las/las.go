@@ -123,8 +123,11 @@ func (las *Lasf) GetNextPoint() (Pointer, error) {
 	i := uint64(0)
 	for {
 		if las.qt != nil && las.qids != nil {
+			if int(las.qid) >= len(las.qids) {
+				return nil, ErrInvalidIndex
+			}
 			i = las.qids[las.qid]
-			if int(i) > len(las.qids) {
+			if i >= las.PointCount() {
 				las.qid = 0
 				return nil, ErrInvalidIndex
 			}
