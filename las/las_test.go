@@ -57,6 +57,13 @@ func TestOpen(t *testing.T) {
 	_ = l
 }
 
+func TestOpenFail(t *testing.T) {
+	l, err := Open("")
+	if l != nil || err == nil {
+		t.Fail()
+	}
+}
+
 func TestSignature(t *testing.T) {
 	l := openTest(small, t)
 	if l.Signature() != [4]byte{'L', 'A', 'S', 'F'} {
