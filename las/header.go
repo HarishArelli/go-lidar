@@ -60,9 +60,6 @@ func readHeader(fin io.ReadSeeker) (header, error) {
 		return nil, err
 	}
 	fin.Seek(0, os.SEEK_SET)
-	if err != nil {
-		return nil, err
-	}
 	switch v {
 	case 0, 1, 2:
 		var h header12
