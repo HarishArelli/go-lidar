@@ -23,6 +23,35 @@ func openTest(f string, t *testing.T) *Lasf {
 	return l
 }
 
+func TestBitConv(t *testing.T) {
+	i := uint8(1)
+	j := convertToUInt8(i, 0, 1)
+	if j != 1 {
+		t.Logf("%d != 1\n", j)
+		t.Fail()
+	}
+	i = 2
+	j = convertToUInt8(i, 0, 2)
+	if j != 2 {
+		t.Logf("%d != 2\n", j)
+		t.Fail()
+	}
+	j = convertToUInt8(i, 1, 0)
+	if j != 0 {
+		t.Logf("%d != 0\n", j)
+		t.Fail()
+	}
+	i = 255
+	var k uint8
+	for k = 0; k < 8; k++ {
+		j = convertToUInt8(i, k, 1)
+		if j != 1 {
+			t.Logf("%d != 1\n", j)
+			t.Fail()
+		}
+	}
+}
+
 func TestOpen(t *testing.T) {
 	l := openTest(small, t)
 	_ = l
@@ -399,6 +428,20 @@ func TestRewind(t *testing.T) {
 	}
 }
 
+func TestOverRead(t *testing.T) {
+	l := openTest(small, t)
+	for {
+		_, e := l.GetNextPoint()
+		if e != nil {
+			break
+		}
+	}
+	p, e := l.GetNextPoint();
+	if p != nil || e == nil {
+		t.Fail()
+	}
+}
+
 func TestFilter(t *testing.T) {
 	l := openTest(small, t)
 	l.SetFilter(0, 0, 0, 0)
@@ -470,6 +513,8 @@ func TestQuadFilter(t *testing.T) {
 		t.Fail()
 	}
 }
+
+// Benchmarks
 func BenchmarkReadAll(b *testing.B) {
 	l, err := Open(small)
 	if err != nil {
