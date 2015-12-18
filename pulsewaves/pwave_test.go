@@ -12,7 +12,10 @@ func TestOpen(t *testing.T) {
 		t.Log(err)
 		t.FailNow()
 	}
-	for i := 0; i < 10; i++ {
-		_ = pw.ReadPoint(uint64(i))
+	for i := 0; i < 1; i++ {
+		err = pw.ReadPoint(uint64(i))
+		if err != nil {
+			t.FailNow()
+		}
 	}
 }

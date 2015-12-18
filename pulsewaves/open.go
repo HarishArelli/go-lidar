@@ -60,7 +60,6 @@ func (p *PulseWave) Close() error {
 	//p.win.Close()
 	p.pHeader = nil
 	p.wHeader = nil
-	p.p = nil
 	p.index = 0
 	return nil
 }

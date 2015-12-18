@@ -4,6 +4,7 @@ import (
 	"encoding/binary"
 	"fmt"
 	"io"
+	"os"
 )
 
 type PulseWave struct {
@@ -19,8 +20,6 @@ type PulseWave struct {
 	index uint64
 	// Various vlr information
 	pulseDescriptors []pulseDescriptor
-
-	p *pulse
 }
 
 // Public API for the PulseWaves format
@@ -49,9 +48,25 @@ func (p *PulseWave) ReadPoint(i uint64) error {
 		fmt.Println(err)
 		return err
 	}
-	//p.win.Seek(int64(pu.WaveOffset), 0)
 
-	fmt.Printf("%#v\n", pu)
-	fmt.Printf("%+v\n", p.pulseDescriptors[pu.DescriptorIndex])
+	//fmt.Printf("%#v\n", pu)
+	//fmt.Printf("%+v\n", p.pulseDescriptors[pu.DescriptorIndex])
+	//fmt.Printf("%+v\n", p.pulseDescriptors[pu.DescriptorIndex].sampleRecords[0])
+	fmt.Printf("%+v\n", p)
+
+	pd := p.pulseDescriptors[pu.DescriptorIndex]
+	sr := pd.sampleRecords[0]
+	// Read from the wave file
+	p.win.Seek(pu.WaveOffset, os.SEEK_SET)
+	for i := 0; i < int(sr.SegmentCount); i++ {
+		for j := 0; j < int(sr.SampleCount); j++ {
+			samples := make([]byte, sr.BitsSample)
+			err := binary.Read(p.win, binary.LittleEndian, &samples)
+			if err != nil {
+				return err
+			}
+			fmt.Println(samples)
+		}
+	}
 	return nil
 }

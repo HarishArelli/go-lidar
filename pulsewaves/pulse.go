@@ -10,7 +10,12 @@ type pulse struct {
 	XAnchor, YAnchor, ZAnchor int32
 	XTarget, YTarget, ZTarget int32
 	FirstReturn, LastReturn   int16
+	// Bits 0-7
 	DescriptorIndex           uint8
+	// Reserved 0-3
+	// Edge of Scan Line 4
+	// Scan Direction 5
+	// Mirror Facet 6-7
 	ScanData                  uint8
 	Intensity                 uint8
 	Classification            uint8
