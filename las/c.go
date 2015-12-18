@@ -82,3 +82,18 @@ func LasfPointX(fid int, x *float64) int {
 	*x = px
 	return LASF_OK
 }
+
+func LasfPointY(fid int, y *float64) int {
+	cLasMutex.Lock()
+	lf, ok := lasMap.m[fid]
+	cLasMutex.Unlock()
+	if !ok {
+		return LASF_INVALIDHANDLE
+	}
+	if lf.p == nil {
+		return LASF_INVALIDPOINT
+	}
+	py := lf.p.Y();
+	*y = py
+	return LASF_OK
+}
