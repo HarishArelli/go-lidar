@@ -11,8 +11,15 @@ import (
 	"testing"
 )
 
+const epsilon = 0.000001
+
+func almost(a, b float64) bool {
+	return !(math.Abs(a)-math.Abs(b) > epsilon)
+}
+
 const (
-	small = "../data/xyzrgb_manuscript_detail.las"
+	//small = "../data/xyzrgb_manuscript_detail.las"
+	small = "../data/test13.las"
 )
 
 func openTest(f string, t *testing.T) *Lasf {
@@ -122,9 +129,9 @@ func TestProjectID3(t *testing.T) {
 }
 
 func TestProjectID4(t *testing.T) {
-	t.Skip()
 	l := openTest(small, t)
-	if l.ProjectID4() != [8]byte{'0', '0', '0', '0', '0', '0', '0', '0'} {
+	if l.ProjectID4() != [8]byte{0, 0, 0, 0, 0, 0, 0, 0} {
+		t.Log(l.ProjectID4())
 		t.FailNow()
 	}
 }
@@ -134,7 +141,7 @@ func TestVersion(t *testing.T) {
 	if l.VMaj() != 1 {
 		t.Fail()
 	}
-	if l.VMin() != 2 {
+	if l.VMin() != 3 {
 		t.Fail()
 	}
 }
@@ -143,7 +150,7 @@ func TestSysIdentifier(t *testing.T) {
 	l := openTest(small, t)
 	raw := l.SysIdentifier()
 	si := string(raw[:])
-	if !strings.HasPrefix(si, "point data of Vellum manuscript") {
+	if !strings.HasPrefix(si, "LAStools (c) by Martin Isenburg") {
 		t.FailNow()
 	}
 }
@@ -152,46 +159,46 @@ func TestGenSoftware(t *testing.T) {
 	l := openTest(small, t)
 	raw := l.GenSoftware()
 	gs := string(raw[:])
-	if !strings.HasPrefix(gs, "lastools LAS format 1.2 test") {
+	if !strings.HasPrefix(gs, "las2las (version 110915)") {
 		t.FailNow()
 	}
 }
 
 func TestCreateDOY(t *testing.T) {
 	l := openTest(small, t)
-	if l.CreateDOY() != 37 {
+	if l.CreateDOY() != 1 {
 		t.Fail()
 	}
 }
 
 func TestCreateYear(t *testing.T) {
 	l := openTest(small, t)
-	if l.CreateYear() != 2008 {
+	if l.CreateYear() != 1 {
 		t.Fail()
 	}
 }
 
 func TestHeaderSize(t *testing.T) {
 	l := openTest(small, t)
-	if l.HeaderSize() != 227 {
+	if l.HeaderSize() != 235 {
 		t.Fail()
 	}
 }
 func TestPointOffset(t *testing.T) {
 	l := openTest(small, t)
-	if l.PointOffset() != 227 {
+	if l.PointOffset() != 909 {
 		t.Fail()
 	}
 }
 func TestVlrCount(t *testing.T) {
 	l := openTest(small, t)
-	if l.VlrCount() != 0 {
+	if l.VlrCount() != 5 {
 		t.Fail()
 	}
 }
 func TestPointFormat(t *testing.T) {
 	l := openTest(small, t)
-	if l.PointFormat() != 2 {
+	if l.PointFormat() != 0 {
 		t.Fail()
 	}
 }
@@ -207,7 +214,7 @@ func TestPointCount(t *testing.T) {
 		}
 		i++
 	}
-	if i != 25008 {
+	if i != 11781 {
 		t.Logf("Read %d points, header says %d", i, l.PointCount())
 		t.Fail()
 	}
@@ -222,21 +229,21 @@ func PointsByReturn(t *testing.T) {
 
 func TestXScale(t *testing.T) {
 	l := openTest(small, t)
-	if l.XScale() != 0.001 {
+	if l.XScale() != 0.01 {
 		t.Fail()
 	}
 }
 
 func TestYScale(t *testing.T) {
 	l := openTest(small, t)
-	if l.YScale() != 0.001 {
+	if l.YScale() != 0.01 {
 		t.Fail()
 	}
 }
 
 func TestZScale(t *testing.T) {
 	l := openTest(small, t)
-	if l.ZScale() != 0.001 {
+	if l.ZScale() != 0.01 {
 		t.Logf("Invalid z scale: %f", l.ZScale())
 		t.Fail()
 	}
@@ -267,41 +274,40 @@ func TestZOffset(t *testing.T) {
 // Not sure if it's built in to go.
 func TestMaxX(t *testing.T) {
 	l := openTest(small, t)
-	if l.MaxX() != 10.0 {
+	if !almost(l.MaxX(), 2484009.38) {
 		t.Fail()
 	}
 }
 func TestMinX(t *testing.T) {
 	l := openTest(small, t)
-	if l.MinX() != -1.0 {
+	if !almost(l.MinX(), 2483569.14) {
 		t.Fail()
 	}
 }
 func TestMaxY(t *testing.T) {
 	l := openTest(small, t)
-	if l.MaxY() != 9.958 {
+	if !almost(l.MaxY(), 366616.60) {
 		t.Fail()
 	}
 }
 
 func TestMinY(t *testing.T) {
 	l := openTest(small, t)
-	if l.MinY() != -9.996 {
+	if l.MinY() != 366203.87 {
 		t.Fail()
 	}
 }
 
 func TestMaxZ(t *testing.T) {
 	l := openTest(small, t)
-	if l.MaxZ() != 0.181 {
+	if l.MaxZ() != 1581.78 {
 		t.Fail()
 	}
 }
 
 func TestMinZ(t *testing.T) {
-	t.Skip()
 	l := openTest(small, t)
-	if l.MinZ() != -0.816 {
+	if l.MinZ() != 1480.88 {
 		t.Logf("MinZ: %f", l.MinZ())
 		t.Fail()
 	}
@@ -327,100 +333,6 @@ func EvlrCount(t *testing.T) {
     }
 }
 */
-
-func TestColorRange(t *testing.T) {
-	l := openTest(small, t)
-
-	var rMin, rMax uint16
-	var gMin, gMax uint16
-	var bMin, bMax uint16
-	rMin = 255
-	rMax = 0
-	gMin = 255
-	gMax = 0
-	bMin = 255
-	bMax = 0
-
-	for i := 0; i < int(l.PointCount()); i++ {
-		p, err := l.GetPoint(uint64(i))
-		if err != nil {
-			t.Log(err)
-			t.FailNow()
-		}
-		r, g, b := p.Red(), p.Green(), p.Blue()
-		if r > rMax {
-			rMax = r
-		}
-		if r < rMin {
-			rMin = r
-		}
-		if g > gMax {
-			gMax = g
-		}
-		if g < gMin {
-			gMin = g
-		}
-		if b > bMax {
-			bMax = b
-		}
-		if b < bMin {
-			bMin = b
-		}
-	}
-
-	// According to lasinfo
-	if rMin != 47 || rMax != 224 || gMin != 37 || gMax != 204 || bMin != 39 || bMax != 171 {
-		t.Fail()
-	}
-}
-
-func TestRawExtents(t *testing.T) {
-	t.Skip()
-	l := openTest(small, t)
-
-	XMax := -1 * math.MaxFloat64
-	XMin := math.MaxFloat64
-	YMax := -1 * math.MaxFloat64
-	YMin := math.MaxFloat64
-
-	for i := 0; i < int(l.PointCount()); i++ {
-		p, err := l.GetNextPoint()
-		if err != nil {
-			t.Log(err)
-			t.FailNow()
-		}
-		x := p.X() * l.XScale()
-		if x > XMax {
-			XMax = x
-		}
-		if x < XMin {
-			XMin = x
-		}
-		y := p.Y() * l.YScale()
-		if y > YMax {
-			YMax = x
-		}
-		if y < YMin {
-			YMin = y
-		}
-	}
-	if XMax != l.MaxX() {
-		t.Logf("Header x max doesn't match actual(%f != %f)", XMax, l.MaxX())
-		t.Fail()
-	}
-	if XMin != l.MinX() {
-		t.Logf("Header x min doesn't match actual(%f != %f)", XMin, l.MinX())
-		t.Fail()
-	}
-	if YMax != l.MaxY() {
-		t.Logf("Header y max doesn't match actual(%f != %f)", YMax, l.MaxY())
-		t.Fail()
-	}
-	if YMin != l.MinY() {
-		t.Logf("Header y min doesn't match actual(%f != %f)", YMin, l.MinY())
-		t.Fail()
-	}
-}
 
 func TestRewind(t *testing.T) {
 	l := openTest(small, t)
@@ -458,7 +370,7 @@ func TestOverRead(t *testing.T) {
 			break
 		}
 	}
-	p, e := l.GetNextPoint();
+	p, e := l.GetNextPoint()
 	if p != nil || e == nil {
 		t.Fail()
 	}
