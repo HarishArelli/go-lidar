@@ -141,7 +141,7 @@ func (q *QuadTree) Query(xmin, xmax, ymin, ymax float64) []uint64 {
 }
 
 func (q *QuadTree) depth() int {
-	var qt *QuadTree;
+	var qt *QuadTree
 	qt = q
 	n := 0
 	for qt != nil {

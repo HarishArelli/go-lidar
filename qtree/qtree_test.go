@@ -1,6 +1,7 @@
 package qtree
 
 import (
+	"math/rand"
 	"testing"
 )
 
@@ -10,7 +11,7 @@ func eightByEight4Point(t *testing.T) *QuadTree {
 	if e != nil {
 		t.Fail()
 	}
-	if !q.Insert(0, 2, 2) || !q.Insert(1, 6, 6) || !q.Insert(2, 2, 6)|| !q.Insert(3, 6, 2) {
+	if !q.Insert(0, 2, 2) || !q.Insert(1, 6, 6) || !q.Insert(2, 2, 6) || !q.Insert(3, 6, 2) {
 		t.Fail()
 	}
 	return q
@@ -36,24 +37,24 @@ func TestContains(t *testing.T) {
 		t.Fail()
 	}
 	if !e.contains(point{0, 0.5, 0.5}) ||
-		 !e.contains(point{0, 1.5, 0.5}) ||
-		 !e.contains(point{0, 1.5, 1.5}) ||
-		 !e.contains(point{0, 0.5, 1.5}) ||
-		 !e.contains(point{0, 0.0, 1.0}) {
+		!e.contains(point{0, 1.5, 0.5}) ||
+		!e.contains(point{0, 1.5, 1.5}) ||
+		!e.contains(point{0, 0.5, 1.5}) ||
+		!e.contains(point{0, 0.0, 1.0}) {
 		t.FailNow()
 	}
 }
 
 func TestNoContains(t *testing.T) {
 	e := envelope{0, 2, 0, 2}
-	if e.contains(point{0, -0.5,  0.5}) ||
-		 e.contains(point{0,  0.5, -0.5}) ||
-		 e.contains(point{0,  1.5, -0.5}) ||
-		 e.contains(point{0,  2.5,  0.5}) ||
-		 e.contains(point{0,  2.5,  1.5}) ||
-		 e.contains(point{0,  1.5,  2.5}) ||
-		 e.contains(point{0,  0.5,  2.5}) ||
-		 e.contains(point{0, -0.5,  1.5}) {
+	if e.contains(point{0, -0.5, 0.5}) ||
+		e.contains(point{0, 0.5, -0.5}) ||
+		e.contains(point{0, 1.5, -0.5}) ||
+		e.contains(point{0, 2.5, 0.5}) ||
+		e.contains(point{0, 2.5, 1.5}) ||
+		e.contains(point{0, 1.5, 2.5}) ||
+		e.contains(point{0, 0.5, 2.5}) ||
+		e.contains(point{0, -0.5, 1.5}) {
 		t.FailNow()
 	}
 }
@@ -194,5 +195,22 @@ func TestQuery3(t *testing.T) {
 			t.Log("Invalid query:", p)
 			t.FailNow()
 		}
+	}
+}
+
+func Benchmark1(b *testing.B) {
+	side := 100.0
+	q, err := New(10, 0, side, 0, side)
+	if err != nil {
+		b.Log(err)
+		b.FailNow()
+	}
+	for i := 0; i < 50000; i++ {
+		q.Insert(uint64(i), side*rand.Float64(), side*rand.Float64())
+	}
+	p := q.Query(0, 10, 0, 10)
+	if len(p) < 1 {
+		b.Log("Failed benchmark")
+		b.Fail()
 	}
 }
