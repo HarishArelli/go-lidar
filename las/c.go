@@ -1,4 +1,3 @@
-
 package las
 
 import (
@@ -9,21 +8,21 @@ var cLasMutex sync.Mutex
 
 type cLas struct {
 	handle int
-	fname string
+	fname  string
 	//references int
 	lasf *Lasf
-	p Pointer
+	p    Pointer
 }
 
 type lasFileMap struct {
-	m map[int] *cLas
+	m map[int]*cLas
 	i int
 }
 
 var lasMap lasFileMap
 
 func init() {
-	lasMap.m = make(map[int] *cLas)
+	lasMap.m = make(map[int]*cLas)
 }
 
 const (
@@ -60,7 +59,7 @@ func LasfReadNextPoint(fid int) int {
 	if !ok {
 		return LASF_INVALIDHANDLE
 	}
-	p, e:= lf.lasf.GetNextPoint()
+	p, e := lf.lasf.GetNextPoint()
 	if e != nil {
 		return LASF_INVALIDINDEX
 	}
@@ -78,7 +77,7 @@ func LasfPointX(fid int, x *float64) int {
 	if lf.p == nil {
 		return LASF_INVALIDPOINT
 	}
-	px := lf.p.X();
+	px := lf.p.X()
 	*x = px
 	return LASF_OK
 }
@@ -93,7 +92,7 @@ func LasfPointY(fid int, y *float64) int {
 	if lf.p == nil {
 		return LASF_INVALIDPOINT
 	}
-	py := lf.p.Y();
+	py := lf.p.Y()
 	*y = py
 	return LASF_OK
 }
