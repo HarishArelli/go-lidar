@@ -1,6 +1,7 @@
 package las
 
 import (
+	"fmt"
 	"sync"
 )
 
@@ -23,6 +24,16 @@ var lasMap lasFileMap
 
 func init() {
 	lasMap.m = make(map[int]*cLas)
+}
+
+func getLas(i int) (*cLas, error) {
+	cLasMutex.Lock()
+	defer cLasMutex.Unlock()
+	lf, ok := lasMap.m[i]
+	if !ok {
+		return nil, fmt.Errorf("Invalid File Handle")
+	}
+	return lf, nil
 }
 
 const (
@@ -53,10 +64,8 @@ func LasfOpen(fname string, fid *int) int {
 }
 
 func LasfReadNextPoint(fid int) int {
-	cLasMutex.Lock()
-	lf, ok := lasMap.m[fid]
-	cLasMutex.Unlock()
-	if !ok {
+	lf, err := getLas(fid)
+	if err != nil {
 		return LASF_INVALIDHANDLE
 	}
 	p, e := lf.lasf.GetNextPoint()
@@ -68,10 +77,8 @@ func LasfReadNextPoint(fid int) int {
 }
 
 func LasfPointX(fid int, x *float64) int {
-	cLasMutex.Lock()
-	lf, ok := lasMap.m[fid]
-	cLasMutex.Unlock()
-	if !ok {
+	lf, err := getLas(fid)
+	if err != nil {
 		return LASF_INVALIDHANDLE
 	}
 	if lf.p == nil {
@@ -83,10 +90,8 @@ func LasfPointX(fid int, x *float64) int {
 }
 
 func LasfPointY(fid int, y *float64) int {
-	cLasMutex.Lock()
-	lf, ok := lasMap.m[fid]
-	cLasMutex.Unlock()
-	if !ok {
+	lf, err := getLas(fid)
+	if err != nil {
 		return LASF_INVALIDHANDLE
 	}
 	if lf.p == nil {
