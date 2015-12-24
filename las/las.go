@@ -68,8 +68,8 @@ func Open(filename string) (*Lasf, error) {
 	// Seek to the start of the points
 	fin.Seek(int64(header.PointOffset()), os.SEEK_SET)
 	filt := filter{-1 * math.MaxFloat64, math.MaxFloat64, -1 * math.MaxFloat64, math.MaxFloat64}
-    l := Lasf{fname: filename, fin: fin, header: header, filter: filt}
-    l.readVlrs()
+	l := Lasf{fname: filename, fin: fin, header: header, filter: filt}
+	l.readVlrs()
 	return &l, nil
 }
 
