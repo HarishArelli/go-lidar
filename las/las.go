@@ -27,7 +27,7 @@ func (f filter) contains(x, y float64) bool {
 type Lasf struct {
 	header
 	fname string
-	fin   io.ReadSeeker
+	fin   io.ReadWriteSeeker
 	index uint64
 	point Pointer
 	filter
@@ -101,8 +101,10 @@ func Create(fname string, lasFmt, pFmt uint8) (*Lasf, error) {
 	if err != nil {
 		return nil, err
 	}
-
-    var h header
+	h, err := newHeader(lasFmt, pFmt)
+	if err != nil {
+		return nil, err
+	}
 	filt := filter{-1 * math.MaxFloat64, math.MaxFloat64, -1 * math.MaxFloat64, math.MaxFloat64}
 	l := Lasf{fname: fname, fin: fin, header: h, filter: filt}
 	return &l, nil

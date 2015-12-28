@@ -89,20 +89,19 @@ func readHeader(fin io.ReadSeeker) (header, error) {
 
 func newHeader(lasFmt, pFmt uint8) (header, error) {
 	err := checkFmtCompat(lasFmt, pFmt)
-    if err != nil {
-        return nil, err
-    }
-    var h header
-    h2 := header12{VMaj_:1, VMin_:lasFmt, PointFormat_:pFmt}
+	if err != nil {
+		return nil, err
+	}
+	var h header
+	h2 := header12{VMaj_: 1, VMin_: lasFmt, PointFormat_: pFmt}
 	switch lasFmt {
 	case 0, 1, 2:
-        h = &header12{VMaj_:1, VMin_:lasFmt, PointFormat_:pFmt}
+		h = &h2
 	case 3:
-        h = &header13{header12:h2}
+		h = &header13{header12: h2}
 	case 4:
-        h3 := header13{header12:h2}
-        h = &header14{header13:h3}
+		h3 := header13{header12: h2}
+		h = &header14{header13: h3}
 	}
-    return h, nil
+	return h, nil
 }
-

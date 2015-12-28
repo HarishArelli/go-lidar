@@ -60,6 +60,40 @@ func TestBitConv(t *testing.T) {
 	}
 }
 
+func TestFmtCompat(t *testing.T) {
+	// Valid for 0-2
+	for i := 0; i < 2; i++ {
+		for j := 0; j < 6; j++ {
+			err := checkFmtCompat(uint8(i), uint8(j))
+			if err != nil {
+				t.Fail()
+			}
+		}
+	}
+	// Valid for 3/4
+	for i := 3; i < 5; i++ {
+		for j := 6; j < 11; j++ {
+			err := checkFmtCompat(uint8(i), uint8(j))
+			if err != nil {
+				t.Fail()
+			}
+		}
+	}
+	// Invalid edges
+	err := checkFmtCompat(0, 6)
+	if err == nil {
+		t.Fail()
+	}
+	err = checkFmtCompat(5, 0)
+	if err == nil {
+		t.Fail()
+	}
+	err = checkFmtCompat(4, 11)
+	if err == nil {
+		t.Fail()
+	}
+}
+
 func TestOpen(t *testing.T) {
 	l := openTest(small, t)
 	_ = l
