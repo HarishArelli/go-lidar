@@ -73,6 +73,41 @@ func Open(filename string) (*Lasf, error) {
 	return &l, nil
 }
 
+var ErrInvalidLasFormat = errors.New("Invalid LASF minor version")
+var ErrInvalidPointFormat = errors.New("Invalid point version")
+var ErrIncompatibleFormats = errors.New("Point format and LASF format are incompatible")
+
+func checkFmtCompat(lasFmt, pFmt uint8) error {
+	if lasFmt < 0 || lasFmt > 4 {
+		return ErrInvalidLasFormat
+	}
+	if pFmt < 0 || pFmt > 10 {
+		return ErrInvalidPointFormat
+	}
+	if lasFmt < 3 && pFmt > 5 {
+		return ErrIncompatibleFormats
+	}
+	return nil
+}
+
+// Create a new las file with the provided header format and point format
+
+func Create(fname string, lasFmt, pFmt uint8) (*Lasf, error) {
+	err := checkFmtCompat(lasFmt, pFmt)
+	if err != nil {
+		return nil, err
+	}
+	fin, err := os.Create(fname)
+	if err != nil {
+		return nil, err
+	}
+
+    var h header
+	filt := filter{-1 * math.MaxFloat64, math.MaxFloat64, -1 * math.MaxFloat64, math.MaxFloat64}
+	l := Lasf{fname: fname, fin: fin, header: h, filter: filt}
+	return &l, nil
+}
+
 var ErrInvalidFormat = errors.New("Invalid point record format")
 var ErrInvalidIndex = errors.New("Invalid point record index")
 
