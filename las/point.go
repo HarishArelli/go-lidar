@@ -56,6 +56,9 @@ reading/writing to disk (pointPacketN, where N is 0-10), and the implementation
 of the format which satisfies the Pointer interface (pointFormatN).  Omitted
 fields are zeroed out (not initialized), and return 0.  You must override
 RecordFormat() for each concrete type.
+
+The members are public so we can use binary.Read for reading, but the structs
+are private.
 */
 
 // Base types

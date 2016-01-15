@@ -84,8 +84,7 @@ func LasfPointX(fid int, x *float64) int {
 	if lf.p == nil {
 		return LASF_INVALIDPOINT
 	}
-	px := lf.p.X()
-	*x = px
+	*x = lf.p.X()
 	return LASF_OK
 }
 
@@ -97,7 +96,18 @@ func LasfPointY(fid int, y *float64) int {
 	if lf.p == nil {
 		return LASF_INVALIDPOINT
 	}
-	py := lf.p.Y()
-	*y = py
+	*y = lf.p.Y()
+	return LASF_OK
+}
+
+func LasfPointZ(fid int, z *float64) int {
+	lf, err := getLas(fid)
+	if err != nil {
+		return LASF_INVALIDHANDLE
+	}
+	if lf.p == nil {
+		return LASF_INVALIDPOINT
+	}
+	*z = lf.p.Z()
 	return LASF_OK
 }

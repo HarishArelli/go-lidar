@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-const in = "../data/xyzrgb_manuscript_detail.las"
+const in = "../data/test13.las"
 
 // Tests for C <-> Go compatibility
 
@@ -40,6 +40,19 @@ func TestY(t *testing.T) {
 	LasfPointY(f, &y)
 	if p.Y() != y {
 		t.Log(p.Y(), y)
+		t.Fail()
+	}
+}
+
+func TestZ(t *testing.T) {
+	l, _ := openGo()
+	p, _ := l.GetNextPoint()
+	f := openC()
+	LasfReadNextPoint(f)
+	var z float64
+	LasfPointZ(f, &z)
+	if p.Z() != z {
+		t.Log(p.Z(), z)
 		t.Fail()
 	}
 }
