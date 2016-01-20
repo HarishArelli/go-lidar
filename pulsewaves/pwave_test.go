@@ -19,3 +19,16 @@ func TestOpen(t *testing.T) {
 		}
 	}
 }
+
+func TestReadPoint1(t *testing.T) {
+	pw, err := Open(fname)
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+	err = pw.ReadPoint(1)
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+}

@@ -45,14 +45,8 @@ func (p *PulseWave) ReadPoint(i uint64) error {
 	var pu pulse
 	err := binary.Read(p.pin, binary.LittleEndian, &pu)
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
-
-	//fmt.Printf("%#v\n", pu)
-	//fmt.Printf("%+v\n", p.pulseDescriptors[pu.DescriptorIndex])
-	//fmt.Printf("%+v\n", p.pulseDescriptors[pu.DescriptorIndex].sampleRecords[0])
-	fmt.Printf("%+v\n", p)
 
 	pd := p.pulseDescriptors[pu.DescriptorIndex]
 	sr := pd.sampleRecords[0]
