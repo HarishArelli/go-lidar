@@ -22,6 +22,22 @@ func openC() int {
 	return fid
 }
 
+func TestInvalidIndex(t *testing.T) {
+	i := openC()
+	rc := LasfReadNextPoint(i+1)
+	if rc != LASF_INVALIDHANDLE {
+		t.Fail()
+	}
+}
+
+func TestInvalidFile(t *testing.T) {
+	var i int
+	rc := LasfOpen("./las.go", &i)
+	if rc != LASF_CANTOPEN {
+		t.Fail()
+	}
+}
+
 func TestX(t *testing.T) {
 	l, _ := openGo()
 	p, _ := l.GetNextPoint()
