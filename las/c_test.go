@@ -23,7 +23,6 @@ func openC() int {
 }
 
 func TestX(t *testing.T) {
-	t.Skip()
 	l, _ := openGo()
 	p, _ := l.GetNextPoint()
 	f := openC()
@@ -37,7 +36,6 @@ func TestX(t *testing.T) {
 }
 
 func TestY(t *testing.T) {
-	t.Skip()
 	l, _ := openGo()
 	p, _ := l.GetNextPoint()
 	f := openC()
@@ -51,7 +49,6 @@ func TestY(t *testing.T) {
 }
 
 func TestZ(t *testing.T) {
-	t.Skip()
 	l, _ := openGo()
 	p, _ := l.GetNextPoint()
 	f := openC()

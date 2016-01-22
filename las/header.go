@@ -30,13 +30,14 @@ type headerv2 struct {
 	VlrCount                  uint32
 	PointFormat               uint8
 	PointSize                 uint16
-	PointCount                uint32
+	ShortPointCount           uint32
 	PointsByReturn            [5]uint32
 	XScale, YScale, ZScale    float64
 	XOffset, YOffset, ZOffset float64
 	MaxX, MinX, MaxY          float64
 	MinY, MaxZ, MinZ          float64
 }
+
 type headerv3 struct {
 	WaveformOffset uint64
 }
@@ -80,4 +81,13 @@ func readHeader(fin io.ReadSeeker) (*header, error) {
 	}
 	h := header{headerv2: h2, headerv3: h3, headerv4: h4}
 	return &h, nil
+}
+
+func (h *header) PointCount() uint64 {
+	switch h.VMin {
+	case 4:
+		return h.LongPointCount
+	default:
+		return uint64(h.ShortPointCount)
+	}
 }
