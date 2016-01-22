@@ -10,7 +10,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"math"
 	"os"
 
@@ -27,7 +26,7 @@ func (f filter) contains(x, y float64) bool {
 }
 
 type Lasf struct {
-	header
+	*header
 	fname string
 	fin   io.ReadSeeker
 	index uint64
@@ -36,12 +35,6 @@ type Lasf struct {
 	qt   *qtree.QuadTree
 	qids []uint64
 	qid  uint64
-}
-
-var dbg *log.Logger
-
-func init() {
-	dbg = log.New(os.Stdout, "LASF DEBUG:", log.Ldate|log.Ltime|log.Lshortfile)
 }
 
 // Check and make sure this is correct...
@@ -68,7 +61,7 @@ func Open(filename string) (*Lasf, error) {
 		return nil, err
 	}
 	// Seek to the start of the points
-	fin.Seek(int64(header.PointOffset()), os.SEEK_SET)
+	fin.Seek(int64(header.PointOffset), os.SEEK_SET)
 	filt := filter{-1 * math.MaxFloat64, math.MaxFloat64, -1 * math.MaxFloat64, math.MaxFloat64}
 	l := Lasf{fname: filename, fin: fin, header: header, filter: filt}
 	l.readVlrs()
@@ -79,9 +72,9 @@ var ErrInvalidFormat = errors.New("Invalid point record format")
 var ErrInvalidIndex = errors.New("Invalid point record index")
 
 func (las *Lasf) readPoint(n uint64) (Pointer, error) {
-	offset := uint64(las.PointOffset()) + uint64(las.PointSize())*n
+	offset := uint64(las.PointOffset) + uint64(las.PointSize)*n
 	las.fin.Seek(int64(offset), os.SEEK_SET)
-	switch las.PointFormat() {
+	switch las.PointFormat {
 	case 0:
 		return las.readPointFormat0()
 	case 1:
@@ -112,7 +105,7 @@ func (las *Lasf) readPoint(n uint64) (Pointer, error) {
 // Rewind resets the the point index to the first point in the file
 func (las *Lasf) Rewind() error {
 	las.index = 0
-	las.fin.Seek(int64(las.PointOffset()), os.SEEK_SET)
+	las.fin.Seek(int64(las.PointOffset), os.SEEK_SET)
 	return nil
 }
 
@@ -131,7 +124,7 @@ func (las *Lasf) GetNextPoint() (Pointer, error) {
 				return nil, ErrInvalidIndex
 			}
 			i = las.qids[las.qid]
-			if i >= las.PointCount() {
+			if i >= uint64(las.PointCount) {
 				las.qid = 0
 				return nil, ErrInvalidIndex
 			}
@@ -144,7 +137,7 @@ func (las *Lasf) GetNextPoint() (Pointer, error) {
 		if err != nil {
 			return p, err
 		}
-		if las.contains(p.X()*las.XScale(), p.Y()*las.YScale()) {
+		if las.contains(p.X()*las.XScale, p.Y()*las.YScale) {
 			return p, nil
 		}
 	}
@@ -152,7 +145,7 @@ func (las *Lasf) GetNextPoint() (Pointer, error) {
 
 // GetPoint fetches a specific point at index n.
 func (las *Lasf) GetPoint(n uint64) (Pointer, error) {
-	if n >= las.PointCount() {
+	if n >= uint64(las.PointCount) {
 		return nil, fmt.Errorf("Invalid point index %d", n)
 	}
 	p, err := las.readPoint(n)
@@ -190,8 +183,8 @@ func (las *Lasf) ClearFilter() {
 // filtered reads using GetNextPoint.
 func (las *Lasf) BuildQuadTree() {
 	las.ClearFilter()
-	n := uint64(float64(las.PointCount() / 10.0))
-	qt, err := qtree.New(n, las.MinX(), las.MaxX(), las.MinY(), las.MaxY())
+	n := uint64(float64(las.PointCount / 10.0))
+	qt, err := qtree.New(n, las.MinX, las.MaxX, las.MinY, las.MaxY)
 	if err != nil {
 		return
 	}
@@ -201,7 +194,7 @@ func (las *Lasf) BuildQuadTree() {
 		if err != nil {
 			break
 		}
-		qt.Insert(i, p.X()*las.XScale(), p.Y()*las.YScale())
+		qt.Insert(i, p.X()*las.XScale, p.Y()*las.YScale)
 		i++
 	}
 	las.qid = 0

@@ -94,8 +94,8 @@ type geoKeys struct {
 
 // Read vlrs and store predefined vlrs in memory.
 func (l *Lasf) readVlrs() error {
-	vlrCount := int(l.VlrCount())
-	l.fin.Seek(int64(l.HeaderSize()), 0)
+	vlrCount := int(l.VlrCount)
+	l.fin.Seek(int64(l.HeaderSize), 0)
 	var vlrh vlrHeader
 	for i := 0; i < vlrCount; i++ {
 		err := binary.Read(l.fin, binary.LittleEndian, &vlrh)

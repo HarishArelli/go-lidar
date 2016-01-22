@@ -61,6 +61,7 @@ The members are public so we can use binary.Read for reading, but the structs
 are private.
 */
 
+// Base types
 type GpsTimePacket float64
 
 func (gps GpsTimePacket) GpsTime() float64 {

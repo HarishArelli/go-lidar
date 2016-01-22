@@ -11,78 +11,74 @@ import (
 	"os"
 )
 
-type header interface {
-	Signature() [4]byte
-	FileSourceId() uint16
-	GlobalEncoding() uint16
-	ProjectID1() uint32
-	ProjectID2() uint16
-	ProjectID3() uint16
-	ProjectID4() [8]byte
-	VMaj() uint8
-	VMin() uint8
-	SysIdentifier() [32]byte
-	GenSoftware() [32]byte
-	CreateDOY() uint16
-	CreateYear() uint16
-	HeaderSize() uint16
-	PointOffset() uint32
-	VlrCount() uint32
-	PointFormat() uint8
-	PointSize() uint16
-	PointCount() uint64
-	PointsByReturn() []uint64
-	XScale() float64
-	YScale() float64
-	ZScale() float64
-	XOffset() float64
-	YOffset() float64
-	ZOffset() float64
-	MaxX() float64
-	MinX() float64
-	MaxY() float64
-	MinY() float64
-	MaxZ() float64
-	MinZ() float64
-	WaveformOffset() uint64
-	EvlrOffset() uint64
-	EvlrCount() uint32
+type header1v2 struct {
+	Signature                 [4]byte // Must be "LASF"
+	FileSourceId              uint16  // Reserved before 1.2
+	GlobalEncoding            uint16  // Reserved before 1.2
+	ProjectID1                uint32  // Optional
+	ProjectID2                uint16  // Optional
+	ProjectID3                uint16  // Optional
+	ProjectID4                [8]byte // Optional
+	VMaj                      uint8
+	VMin                      uint8
+	SysIdentifier             [32]byte
+	GenSoftware               [32]byte
+	CreateDOY                 uint16
+	CreateYear                uint16
+	HeaderSize                uint16
+	PointOffset               uint32
+	VlrCount                  uint32
+	PointFormat               uint8
+	PointSize                 uint16
+	PointCount                uint32
+	PointsByReturn            [5]uint32
+	XScale, YScale, ZScale    float64
+	XOffset, YOffset, ZOffset float64
+	MaxX, MinX, MaxY          float64
+	MinY, MaxZ, MinZ          float64
+}
+type header1v3 struct {
+	WaveformOffset uint64
 }
 
-const versMinorOffset = 25
+type header1v4 struct {
+	EvlrOffset         uint64
+	EvlrCount          uint32
+	LongPointCount     uint64
+	LongPointsByReturn [15]uint64
+}
 
-func readHeader(fin io.ReadSeeker) (header, error) {
-	// Check minor version
-	fin.Seek(versMinorOffset, os.SEEK_SET)
-	var v uint8
-	err := binary.Read(fin, binary.LittleEndian, &v)
+type header struct {
+	header1v2
+	header1v3
+	header1v4
+}
+
+func readHeader(fin io.ReadSeeker) (*header, error) {
+	fin.Seek(0, os.SEEK_SET)
+	var h2 header1v2
+	var h3 header1v3
+	var h4 header1v4
+	err := binary.Read(fin, binary.LittleEndian, &h2)
 	if err != nil {
 		return nil, err
 	}
-	fin.Seek(0, os.SEEK_SET)
-	switch v {
-	case 0, 1, 2:
-		var h header12
-		err = binary.Read(fin, binary.LittleEndian, &h)
-		if err != nil {
-			return nil, err
-		}
-		return &h, nil
-	case 3:
-		var h header13
-		err = binary.Read(fin, binary.LittleEndian, &h)
-		if err != nil {
-			return nil, err
-		}
-		return &h, nil
-	case 4:
-		var h header14
-		err = binary.Read(fin, binary.LittleEndian, &h)
-		if err != nil {
-			return nil, err
-		}
-		return &h, nil
-	default:
-		return nil, fmt.Errorf("Invalid minor version in header: %d", v)
+	if h2.Signature != [4]byte{'L', 'A', 'S', 'F'} {
+		return nil, fmt.Errorf("invalid lasf signature: %s", string(h2.Signature[:]))
 	}
+	if h2.VMin >= 3 {
+		err := binary.Read(fin, binary.LittleEndian, &h3)
+		if err != nil {
+			return nil, err
+		}
+	}
+	if h2.VMin >= 4 {
+		err := binary.Read(fin, binary.LittleEndian, &h4)
+		if err != nil {
+			return nil, err
+		}
+	}
+	h := header{header1v2: h2, header1v3: h3, header1v4: h4}
+	return &h, nil
 }
+

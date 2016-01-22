@@ -88,67 +88,67 @@ func TestOpenFail3(t *testing.T) {
 
 func TestSignature(t *testing.T) {
 	l := openTest(small, t)
-	if l.Signature() != [4]byte{'L', 'A', 'S', 'F'} {
+	if l.Signature != [4]byte{'L', 'A', 'S', 'F'} {
 		t.Fail()
 	}
 }
 
 func TestFileSourceId(t *testing.T) {
 	l := openTest(small, t)
-	if l.FileSourceId() != 0 {
+	if l.FileSourceId != 0 {
 		t.FailNow()
 	}
 }
 
 func TestGlobalEncoding(t *testing.T) {
 	l := openTest(small, t)
-	if l.GlobalEncoding() != 0 {
+	if l.GlobalEncoding != 0 {
 		t.FailNow()
 	}
 }
 
 func TestProjectID1(t *testing.T) {
 	l := openTest(small, t)
-	if l.ProjectID1() != 0 {
+	if l.ProjectID1 != 0 {
 		t.FailNow()
 	}
 }
 
 func TestProjectID2(t *testing.T) {
 	l := openTest(small, t)
-	if l.ProjectID2() != 0 {
+	if l.ProjectID2 != 0 {
 		t.FailNow()
 	}
 }
 
 func TestProjectID3(t *testing.T) {
 	l := openTest(small, t)
-	if l.ProjectID3() != 0 {
+	if l.ProjectID3 != 0 {
 		t.FailNow()
 	}
 }
 
 func TestProjectID4(t *testing.T) {
 	l := openTest(small, t)
-	if l.ProjectID4() != [8]byte{0, 0, 0, 0, 0, 0, 0, 0} {
-		t.Log(l.ProjectID4())
+	if l.ProjectID4 != [8]byte{0, 0, 0, 0, 0, 0, 0, 0} {
+		t.Log(l.ProjectID4)
 		t.FailNow()
 	}
 }
 
 func TestVersion(t *testing.T) {
 	l := openTest(small, t)
-	if l.VMaj() != 1 {
+	if l.VMaj != 1 {
 		t.Fail()
 	}
-	if l.VMin() != 3 {
+	if l.VMin != 3 {
 		t.Fail()
 	}
 }
 
 func TestSysIdentifier(t *testing.T) {
 	l := openTest(small, t)
-	raw := l.SysIdentifier()
+	raw := l.SysIdentifier
 	si := string(raw[:])
 	if !strings.HasPrefix(si, "LAStools (c) by Martin Isenburg") {
 		t.FailNow()
@@ -157,7 +157,7 @@ func TestSysIdentifier(t *testing.T) {
 
 func TestGenSoftware(t *testing.T) {
 	l := openTest(small, t)
-	raw := l.GenSoftware()
+	raw := l.GenSoftware
 	gs := string(raw[:])
 	if !strings.HasPrefix(gs, "las2las (version 110915)") {
 		t.FailNow()
@@ -166,39 +166,39 @@ func TestGenSoftware(t *testing.T) {
 
 func TestCreateDOY(t *testing.T) {
 	l := openTest(small, t)
-	if l.CreateDOY() != 1 {
+	if l.CreateDOY != 1 {
 		t.Fail()
 	}
 }
 
 func TestCreateYear(t *testing.T) {
 	l := openTest(small, t)
-	if l.CreateYear() != 1 {
+	if l.CreateYear != 1 {
 		t.Fail()
 	}
 }
 
 func TestHeaderSize(t *testing.T) {
 	l := openTest(small, t)
-	if l.HeaderSize() != 235 {
+	if l.HeaderSize != 235 {
 		t.Fail()
 	}
 }
 func TestPointOffset(t *testing.T) {
 	l := openTest(small, t)
-	if l.PointOffset() != 909 {
+	if l.PointOffset != 909 {
 		t.Fail()
 	}
 }
 func TestVlrCount(t *testing.T) {
 	l := openTest(small, t)
-	if l.VlrCount() != 5 {
+	if l.VlrCount != 5 {
 		t.Fail()
 	}
 }
 func TestPointFormat(t *testing.T) {
 	l := openTest(small, t)
-	if l.PointFormat() != 0 {
+	if l.PointFormat != 0 {
 		t.Fail()
 	}
 }
@@ -215,7 +215,7 @@ func TestPointCount(t *testing.T) {
 		i++
 	}
 	if i != 11781 {
-		t.Logf("Read %d points, header says %d", i, l.PointCount())
+		t.Logf("Read %d points, header says %d", i, l.PointCount)
 		t.Fail()
 	}
 }
@@ -229,43 +229,43 @@ func PointsByReturn(t *testing.T) {
 
 func TestXScale(t *testing.T) {
 	l := openTest(small, t)
-	if l.XScale() != 0.01 {
+	if l.XScale != 0.01 {
 		t.Fail()
 	}
 }
 
 func TestYScale(t *testing.T) {
 	l := openTest(small, t)
-	if l.YScale() != 0.01 {
+	if l.YScale != 0.01 {
 		t.Fail()
 	}
 }
 
 func TestZScale(t *testing.T) {
 	l := openTest(small, t)
-	if l.ZScale() != 0.01 {
-		t.Logf("Invalid z scale: %f", l.ZScale())
+	if l.ZScale != 0.01 {
+		t.Logf("Invalid z scale: %f", l.ZScale)
 		t.Fail()
 	}
 }
 
 func TestXOffset(t *testing.T) {
 	l := openTest(small, t)
-	if l.XOffset() != 0 {
+	if l.XOffset != 0 {
 		t.Fail()
 	}
 }
 
 func TestYOffset(t *testing.T) {
 	l := openTest(small, t)
-	if l.YOffset() != 0 {
+	if l.YOffset != 0 {
 		t.Fail()
 	}
 }
 
 func TestZOffset(t *testing.T) {
 	l := openTest(small, t)
-	if l.ZOffset() != 0 {
+	if l.ZOffset != 0 {
 		t.Fail()
 	}
 }
@@ -274,41 +274,41 @@ func TestZOffset(t *testing.T) {
 // Not sure if it's built in to go.
 func TestMaxX(t *testing.T) {
 	l := openTest(small, t)
-	if !almost(l.MaxX(), 2484009.38) {
+	if !almost(l.MaxX, 2484009.38) {
 		t.Fail()
 	}
 }
 func TestMinX(t *testing.T) {
 	l := openTest(small, t)
-	if !almost(l.MinX(), 2483569.14) {
+	if !almost(l.MinX, 2483569.14) {
 		t.Fail()
 	}
 }
 func TestMaxY(t *testing.T) {
 	l := openTest(small, t)
-	if !almost(l.MaxY(), 366616.60) {
+	if !almost(l.MaxY, 366616.60) {
 		t.Fail()
 	}
 }
 
 func TestMinY(t *testing.T) {
 	l := openTest(small, t)
-	if l.MinY() != 366203.87 {
+	if l.MinY != 366203.87 {
 		t.Fail()
 	}
 }
 
 func TestMaxZ(t *testing.T) {
 	l := openTest(small, t)
-	if l.MaxZ() != 1581.78 {
+	if l.MaxZ != 1581.78 {
 		t.Fail()
 	}
 }
 
 func TestMinZ(t *testing.T) {
 	l := openTest(small, t)
-	if l.MinZ() != 1480.88 {
-		t.Logf("MinZ: %f", l.MinZ())
+	if l.MinZ != 1480.88 {
+		t.Logf("MinZ: %f", l.MinZ)
 		t.Fail()
 	}
 }
@@ -402,9 +402,9 @@ func TestFilter2(t *testing.T) {
 		}
 		i++
 	}
-	xbuf := (l.MaxX() - l.MinX()) * 0.1
-	ybuf := (l.MaxY() - l.MinY()) * 0.1
-	x, y := (l.MaxX()-l.MinX())/2, (l.MaxY()-l.MinY())/2
+	xbuf := (l.MaxX - l.MinX) * 0.1
+	ybuf := (l.MaxY - l.MinY) * 0.1
+	x, y := (l.MaxX-l.MinX)/2, (l.MaxY-l.MinY)/2
 	l.Rewind()
 	l.SetFilter(x-xbuf, x+xbuf, y-ybuf, y+ybuf)
 	f := 0
@@ -430,9 +430,9 @@ func TestQuadFilter(t *testing.T) {
 		}
 		i++
 	}
-	xbuf := (l.MaxX() - l.MinX()) * 0.1
-	ybuf := (l.MaxY() - l.MinY()) * 0.1
-	x, y := (l.MaxX()-l.MinX())/2, (l.MaxY()-l.MinY())/2
+	xbuf := (l.MaxX - l.MinX) * 0.1
+	ybuf := (l.MaxY - l.MinY) * 0.1
+	x, y := (l.MaxX-l.MinX)/2, (l.MaxY-l.MinY)/2
 	l.BuildQuadTree()
 	l.SetFilter(x-xbuf, x+xbuf, y-ybuf, y+ybuf)
 	f := 0
@@ -471,9 +471,9 @@ func BenchmarkNormalFilter(b *testing.B) {
 	}
 	var points [rounds]int
 	for i := 0; i < rounds; i++ {
-		x, y := (l.MaxX()-l.MinX())/2, (l.MaxY()-l.MinY())/2
-		xbuf := (l.MaxX() - l.MinX()) * 0.01 * float64(i)
-		ybuf := (l.MaxY() - l.MinY()) * 0.01 * float64(i)
+		x, y := (l.MaxX-l.MinX)/2, (l.MaxY-l.MinY)/2
+		xbuf := (l.MaxX - l.MinX) * 0.01 * float64(i)
+		ybuf := (l.MaxY - l.MinY) * 0.01 * float64(i)
 		l.SetFilter(x-xbuf, x+xbuf, y-ybuf, y+ybuf)
 		f := 0
 		for {
@@ -500,9 +500,9 @@ func BenchmarkQuadFilter(b *testing.B) {
 	l.BuildQuadTree()
 	var points [rounds]int
 	for i := 0; i < rounds; i++ {
-		x, y := (l.MaxX()-l.MinX())/2, (l.MaxY()-l.MinY())/2
-		xbuf := (l.MaxX() - l.MinX()) * 0.01 * float64(i)
-		ybuf := (l.MaxY() - l.MinY()) * 0.01 * float64(i)
+		x, y := (l.MaxX-l.MinX)/2, (l.MaxY-l.MinY)/2
+		xbuf := (l.MaxX - l.MinX) * 0.01 * float64(i)
+		ybuf := (l.MaxY - l.MinY) * 0.01 * float64(i)
 		l.SetFilter(x-xbuf, x+xbuf, y-ybuf, y+ybuf)
 		f := 0
 		for {
