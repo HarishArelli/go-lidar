@@ -376,6 +376,19 @@ func TestOverRead(t *testing.T) {
 	}
 }
 
+func TestPointFormat7(t *testing.T) {
+	l, err := Open("../data/test14-7.las")
+	if err != nil {
+		t.Log(err)
+		t.Fail()
+	}
+	_, err = l.GetPoint(0)
+	if err != nil {
+		t.Log(err)
+		t.Fail()
+	}
+}
+
 func TestFilter(t *testing.T) {
 	l := openTest(small, t)
 	l.SetFilter(0, 0, 0, 0)

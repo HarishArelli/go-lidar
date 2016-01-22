@@ -183,34 +183,58 @@ func (las *Lasf) readPoint(i uint64) (Point, error) {
 	var nir uint16
 	var wave wavePacket
 	var err error
-	_ = err
+	var p Point
 	f := las.PointFormat
 	switch {
 	case f >= 0 && f < 6:
 		err = binary.Read(las.fin, binary.LittleEndian, &p0)
+		if err != nil {
+			return p, err
+		}
 		if f == 1 || f == 3 || f == 4 || f == 5 {
 			err = binary.Read(las.fin, binary.LittleEndian, &gps)
+			if err != nil {
+				return p, err
+			}
 		}
 		if f == 2 || f == 3 || f == 5 {
 			err = binary.Read(las.fin, binary.LittleEndian, &rgb)
+			if err != nil {
+				return p, err
+			}
 		}
 		if f == 4 || f == 5 {
 			err = binary.Read(las.fin, binary.LittleEndian, &wave)
+			if err != nil {
+				return p, err
+			}
 		}
-		p := las.point5ToPoint(p0, gps, rgb, wave)
+		p = las.point5ToPoint(p0, gps, rgb, wave)
 		return p, nil
 	case f >= 6 && f <= 10:
 		err = binary.Read(las.fin, binary.LittleEndian, &p6)
+		if err != nil {
+			return p, err
+		}
 		if f == 7 || f == 8 || f == 10 {
 			err = binary.Read(las.fin, binary.LittleEndian, &rgb)
+			if err != nil {
+				return p, err
+			}
 		}
 		if f == 8 || f == 10 {
 			err = binary.Read(las.fin, binary.LittleEndian, &nir)
+			if err != nil {
+				return p, err
+			}
 		}
 		if f == 9 || f == 10 {
 			err = binary.Read(las.fin, binary.LittleEndian, &wave)
+			if err != nil {
+				return p, err
+			}
 		}
-		p := las.point10ToPoint(p6, rgb, nir, wave)
+		p = las.point10ToPoint(p6, rgb, nir, wave)
 		return p, nil
 	default:
 		panic("Invalid point format")
