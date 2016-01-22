@@ -14,32 +14,34 @@ import (
 // supported, 0 or nil is returned.  This may possible change to return an
 // error as well.
 type Point struct {
-	RecordFormat   uint8
-	X              float64
-	Y              float64
-	Z              float64
-	Intensity      uint16
-	RetNum         uint8
-	RetCount       uint8
-	ScanChannel    uint8
-	ScanDirection  uint8
-	Edge           uint8
-	Classification uint8
-	ScanAngle      int16
-	UserData       uint8
-	PointSourceID  uint16
-	GpsTime        float64
-	Red            uint16
-	Green          uint16
-	Blue           uint16
-	NIR            uint16
-	WavePacketDesc uint8
-	WaveOffset     uint64
-	WaveSize       uint32
-	Xt             float32
-	Yt             float32
-	Zt             float32
-	las            *Lasf
+	RecordFormat        uint8
+	X                   float64
+	Y                   float64
+	Z                   float64
+	Intensity           uint16
+	RetNum              uint8
+	RetCount            uint8
+	ClassificationFlags uint8
+	ScanChannel         uint8
+	ScanDirection       uint8
+	Edge                uint8
+	Classification      uint8
+	ScanAngle           int16
+	UserData            uint8
+	PointSourceID       uint16
+	GpsTime             float64
+	Red                 uint16
+	Green               uint16
+	Blue                uint16
+	NIR                 uint16
+	WavePacketDesc      uint8
+	WaveOffset          uint64
+	WaveSize            uint32
+	WaveReturnPoint     float32
+	Xt                  float32
+	Yt                  float32
+	Zt                  float32
+	las                 *Lasf
 }
 
 /*
@@ -75,24 +77,6 @@ type pointPacket0 struct {
 	PointSourceId  uint16
 }
 
-type pointPacket6 struct {
-	X, Y, Z   int32
-	Intensity uint16
-	// Return Number 0-4
-	// Number of returns 4-7
-	ReturnData uint8
-	// Classification Flags 0-3
-	// Scanner Channel 4-5
-	// Scan Direction flag 6
-	// Edge of flight line 7
-	ScanData       uint8
-	Classification uint8
-	UserData       uint8
-	ScanAngle      int16
-	PointSourceId  uint16
-	GpsTime        float64
-}
-
 type rgbPacket struct {
 	Red, Green, Blue uint16
 }
@@ -114,6 +98,7 @@ func (las *Lasf) point5ToPoint(p0 pointPacket0, gps float64, rgb rgbPacket, wave
 	p.Intensity = p0.Intensity
 	p.RetNum = convertToUInt8(p0.RetScanData, 0, 3)
 	p.RetCount = convertToUInt8(p0.RetScanData, 3, 3)
+	// Skip classification flags
 	// Skip scanner channel
 	p.ScanDirection = convertToUInt8(p0.RetScanData, 6, 1)
 	p.Edge = convertToUInt8(p0.RetScanData, 7, 1)
@@ -129,7 +114,58 @@ func (las *Lasf) point5ToPoint(p0 pointPacket0, gps float64, rgb rgbPacket, wave
 	p.WavePacketDesc = wave.WavePacketDesc
 	p.WaveOffset = wave.WaveOffset
 	p.WaveSize = wave.WaveSize
-	// Add other wave crap
+	p.WaveReturnPoint = wave.WaveReturnPoint
+	p.Xt = wave.Xt
+	p.Yt = wave.Yt
+	p.Zt = wave.Zt
+	p.las = las
+	return p
+}
+
+type pointPacket6 struct {
+	X, Y, Z   int32
+	Intensity uint16
+	// Return Number 0-4
+	// Number of returns 4-7
+	ReturnData uint8
+	// Classification Flags 0-3
+	// Scanner Channel 4-5
+	// Scan Direction flag 6
+	// Edge of flight line 7
+	ScanData       uint8
+	Classification uint8
+	UserData       uint8
+	ScanAngle      int16
+	PointSourceId  uint16
+	GpsTime        float64
+}
+
+func (las *Lasf) point10ToPoint(p6 pointPacket6, rgb rgbPacket, nir uint16, wave wavePacket) Point {
+	var p Point
+	p.RecordFormat = las.PointFormat
+	p.X = float64(p6.X)*las.XScale + las.XOffset
+	p.Y = float64(p6.Y)*las.YScale + las.YOffset
+	p.Z = float64(p6.Z)*las.ZScale + las.ZOffset
+	p.Intensity = p6.Intensity
+	p.RetNum = convertToUInt8(p6.ReturnData, 0, 4)
+	p.RetCount = convertToUInt8(p6.ReturnData, 4, 4)
+	p.ClassificationFlags = convertToUInt8(p6.ScanData, 0, 4)
+	p.ScanChannel = convertToUInt8(p6.ScanData, 4, 2)
+	p.ScanDirection = convertToUInt8(p6.ScanData, 6, 1)
+	p.Edge = convertToUInt8(p6.ScanData, 7, 1)
+	p.Classification = p6.Classification
+	p.ScanAngle = p6.ScanAngle
+	p.UserData = p6.UserData
+	p.PointSourceID = p6.PointSourceId
+	p.GpsTime = p6.GpsTime
+	p.Red = rgb.Red
+	p.Green = rgb.Green
+	p.Blue = rgb.Blue
+	p.NIR = nir
+	p.WavePacketDesc = wave.WavePacketDesc
+	p.WaveOffset = wave.WaveOffset
+	p.WaveSize = wave.WaveSize
+	p.WaveReturnPoint = wave.WaveReturnPoint
 	p.Xt = wave.Xt
 	p.Yt = wave.Yt
 	p.Zt = wave.Zt
@@ -174,7 +210,8 @@ func (las *Lasf) readPoint(i uint64) (Point, error) {
 		if f == 9 || f == 10 {
 			err = binary.Read(las.fin, binary.LittleEndian, &wave)
 		}
-		return Point{}, nil
+		p := las.point10ToPoint(p6, rgb, nir, wave)
+		return p, nil
 	default:
 		panic("Invalid point format")
 	}
