@@ -81,4 +81,3 @@ func readHeader(fin io.ReadSeeker) (*header, error) {
 	h := header{header1v2: h2, header1v3: h3, header1v4: h4}
 	return &h, nil
 }
-
