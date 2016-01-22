@@ -11,7 +11,7 @@ import (
 	"os"
 )
 
-type header1v2 struct {
+type headerv2 struct {
 	Signature                 [4]byte // Must be "LASF"
 	FileSourceId              uint16  // Reserved before 1.2
 	GlobalEncoding            uint16  // Reserved before 1.2
@@ -37,11 +37,11 @@ type header1v2 struct {
 	MaxX, MinX, MaxY          float64
 	MinY, MaxZ, MinZ          float64
 }
-type header1v3 struct {
+type headerv3 struct {
 	WaveformOffset uint64
 }
 
-type header1v4 struct {
+type headerv4 struct {
 	EvlrOffset         uint64
 	EvlrCount          uint32
 	LongPointCount     uint64
@@ -49,16 +49,16 @@ type header1v4 struct {
 }
 
 type header struct {
-	header1v2
-	header1v3
-	header1v4
+	headerv2
+	headerv3
+	headerv4
 }
 
 func readHeader(fin io.ReadSeeker) (*header, error) {
 	fin.Seek(0, os.SEEK_SET)
-	var h2 header1v2
-	var h3 header1v3
-	var h4 header1v4
+	var h2 headerv2
+	var h3 headerv3
+	var h4 headerv4
 	err := binary.Read(fin, binary.LittleEndian, &h2)
 	if err != nil {
 		return nil, err
@@ -78,6 +78,6 @@ func readHeader(fin io.ReadSeeker) (*header, error) {
 			return nil, err
 		}
 	}
-	h := header{header1v2: h2, header1v3: h3, header1v4: h4}
+	h := header{headerv2: h2, headerv3: h3, headerv4: h4}
 	return &h, nil
 }
