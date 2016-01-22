@@ -215,7 +215,7 @@ func TestPointCount(t *testing.T) {
 		i++
 	}
 	if i != 11781 {
-		t.Logf("Read %d points, header says %d", i, l.PointCount())
+		t.Logf("Read %d points, header says %d", i, l.PointCount)
 		t.Fail()
 	}
 }

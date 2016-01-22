@@ -124,7 +124,7 @@ func (las *Lasf) GetNextPoint() (Pointer, error) {
 				return nil, ErrInvalidIndex
 			}
 			i = las.qids[las.qid]
-			if i >= uint64(las.PointCount()) {
+			if i >= uint64(las.PointCount) {
 				las.qid = 0
 				return nil, ErrInvalidIndex
 			}
@@ -145,7 +145,7 @@ func (las *Lasf) GetNextPoint() (Pointer, error) {
 
 // GetPoint fetches a specific point at index n.
 func (las *Lasf) GetPoint(n uint64) (Pointer, error) {
-	if n >= uint64(las.PointCount()) {
+	if n >= uint64(las.PointCount) {
 		return nil, fmt.Errorf("Invalid point index %d", n)
 	}
 	p, err := las.readPoint(n)
@@ -183,7 +183,7 @@ func (las *Lasf) ClearFilter() {
 // filtered reads using GetNextPoint.
 func (las *Lasf) BuildQuadTree() {
 	las.ClearFilter()
-	n := uint64(float64(las.PointCount() / 10.0))
+	n := uint64(float64(las.PointCount / 10.0))
 	qt, err := qtree.New(n, las.MinX, las.MaxX, las.MinY, las.MaxY)
 	if err != nil {
 		return
