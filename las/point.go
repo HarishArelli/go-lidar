@@ -13,33 +13,33 @@ import (
 // supported, 0 or nil is returned.  This may possible change to return an
 // error as well.
 
-type Point struct {
-	RecordFormat uint8
-	X float64
-	Y float64
-	Z float64
-	Intensity uint16
-	RetNum uint8
-	RetCount uint8
-	ScanFlag uint8
-	Edge uint8
-	Classification uint8
+type Pointer interface {
+	RecordFormat() uint8
+	X() float64
+	Y() float64
+	Z() float64
+	Intensity() uint16
+	RetNum() uint8
+	RetCount() uint8
+	ScanFlag() uint8
+	Edge() uint8
+	Classification() uint8
 	//ClassificationString string
-	ScanAngle int16
-	UserData uint8
-	PointSourceID uint16
-	GpsTime float64
-	Red uint16
-	Green uint16
-	Blue uint16
-	NIR uint16
-	WavePacketDesc uint8
-	WaveOffset uint64
-	WaveSize uint32
+	ScanAngle() int16
+	UserData() uint8
+	PointSourceID() uint16
+	GpsTime() float64
+	Red() uint16
+	Green() uint16
+	Blue() uint16
+	NIR() uint16
+	WavePacketDesc() uint8
+	WaveOffset() uint64
+	WaveSize() uint32
 	//ReturnPointWaveLoc uint32
-	X_t float32
-	Y_t float32
-	Z_t float32
+	X_t() float32
+	Y_t() float32
+	Z_t() float32
 }
 
 /*
