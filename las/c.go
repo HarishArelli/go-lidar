@@ -16,7 +16,7 @@ type cLas struct {
 	fname  string
 	//references int
 	lasf *Lasf
-	p    Pointer
+	p    *Point
 }
 
 type lasFileMap struct {
@@ -76,7 +76,7 @@ func LasfReadNextPoint(fid int) int {
 	if e != nil {
 		return LASF_INVALIDINDEX
 	}
-	lf.p = p
+	lf.p = &p
 	return LASF_OK
 }
 
@@ -88,7 +88,7 @@ func LasfPointX(fid int, x *float64) int {
 	if lf.p == nil {
 		return LASF_INVALIDPOINT
 	}
-	*x = lf.p.X()
+	*x = lf.p.X
 	return LASF_OK
 }
 
@@ -100,7 +100,7 @@ func LasfPointY(fid int, y *float64) int {
 	if lf.p == nil {
 		return LASF_INVALIDPOINT
 	}
-	*y = lf.p.Y()
+	*y = lf.p.Y
 	return LASF_OK
 }
 
@@ -112,6 +112,6 @@ func LasfPointZ(fid int, z *float64) int {
 	if lf.p == nil {
 		return LASF_INVALIDPOINT
 	}
-	*z = lf.p.Z()
+	*z = lf.p.Z
 	return LASF_OK
 }

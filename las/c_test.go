@@ -29,8 +29,8 @@ func TestX(t *testing.T) {
 	LasfReadNextPoint(f)
 	var x float64
 	LasfPointX(f, &x)
-	if p.X() != x {
-		t.Log(p.X(), x)
+	if p.X != x {
+		t.Log(p.X, x)
 		t.Fail()
 	}
 }
@@ -42,8 +42,8 @@ func TestY(t *testing.T) {
 	LasfReadNextPoint(f)
 	var y float64
 	LasfPointY(f, &y)
-	if p.Y() != y {
-		t.Log(p.Y(), y)
+	if p.Y != y {
+		t.Log(p.Y, y)
 		t.Fail()
 	}
 }
@@ -55,8 +55,8 @@ func TestZ(t *testing.T) {
 	LasfReadNextPoint(f)
 	var z float64
 	LasfPointZ(f, &z)
-	if p.Z() != z {
-		t.Log(p.Z(), z)
+	if p.Z != z {
+		t.Log(p.Z, z)
 		t.Fail()
 	}
 }

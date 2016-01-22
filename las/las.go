@@ -30,7 +30,6 @@ type Lasf struct {
 	fname string
 	fin   io.ReadSeeker
 	index uint64
-	point Pointer
 	filter
 	qt   *qtree.QuadTree
 	qids []uint64
@@ -71,37 +70,6 @@ func Open(filename string) (*Lasf, error) {
 var ErrInvalidFormat = errors.New("Invalid point record format")
 var ErrInvalidIndex = errors.New("Invalid point record index")
 
-func (las *Lasf) readPoint(n uint64) (Pointer, error) {
-	offset := uint64(las.PointOffset) + uint64(las.PointSize)*n
-	las.fin.Seek(int64(offset), os.SEEK_SET)
-	switch las.PointFormat {
-	case 0:
-		return las.readPointFormat0()
-	case 1:
-		return las.readPointFormat1()
-	case 2:
-		return las.readPointFormat2()
-	case 3:
-		return las.readPointFormat3()
-	case 4:
-		return las.readPointFormat4()
-	case 5:
-		return las.readPointFormat5()
-	case 6:
-		return las.readPointFormat6()
-	case 7:
-		return las.readPointFormat7()
-	case 8:
-		return las.readPointFormat8()
-	case 9:
-		return las.readPointFormat9()
-	case 10:
-		return las.readPointFormat10()
-	default:
-		return nil, ErrInvalidFormat
-	}
-}
-
 // Rewind resets the the point index to the first point in the file
 func (las *Lasf) Rewind() error {
 	las.index = 0
@@ -116,17 +84,17 @@ func (las *Lasf) Rewind() error {
 // GetNextPoint returns point n, then a call GetPoint(m), GetNextPoint will
 // return point at m+1, not n+1.  If there is an error reading the point, or if
 // we seek past the end of the points, nil and error are returned.
-func (las *Lasf) GetNextPoint() (Pointer, error) {
+func (las *Lasf) GetNextPoint() (Point, error) {
 	i := uint64(0)
 	for {
 		if las.qt != nil && las.qids != nil {
 			if int(las.qid) >= len(las.qids) {
-				return nil, ErrInvalidIndex
+				return Point{}, ErrInvalidIndex
 			}
 			i = las.qids[las.qid]
 			if i >= uint64(las.PointCount) {
 				las.qid = 0
-				return nil, ErrInvalidIndex
+				return Point{}, ErrInvalidIndex
 			}
 			las.qid++
 		} else {
@@ -137,20 +105,20 @@ func (las *Lasf) GetNextPoint() (Pointer, error) {
 		if err != nil {
 			return p, err
 		}
-		if las.contains(p.X()*las.XScale, p.Y()*las.YScale) {
+		if las.contains(p.X*las.XScale, p.Y*las.YScale) {
 			return p, nil
 		}
 	}
 }
 
 // GetPoint fetches a specific point at index n.
-func (las *Lasf) GetPoint(n uint64) (Pointer, error) {
+func (las *Lasf) GetPoint(n uint64) (Point, error) {
 	if n >= uint64(las.PointCount) {
-		return nil, fmt.Errorf("Invalid point index %d", n)
+		return Point{}, fmt.Errorf("Invalid point index %d", n)
 	}
 	p, err := las.readPoint(n)
 	if err != nil {
-		return nil, err
+		return Point{}, err
 	}
 	return p, nil
 }
@@ -194,7 +162,7 @@ func (las *Lasf) BuildQuadTree() {
 		if err != nil {
 			break
 		}
-		qt.Insert(i, p.X()*las.XScale, p.Y()*las.YScale)
+		qt.Insert(i, p.X*las.XScale, p.Y*las.YScale)
 		i++
 	}
 	las.qid = 0

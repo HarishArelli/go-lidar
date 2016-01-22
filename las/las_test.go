@@ -342,22 +342,22 @@ func TestRewind(t *testing.T) {
 	}
 	l.Rewind()
 	p2, err := l.GetNextPoint()
-	if p.X() != p2.X() {
+	if p.X != p2.X {
 		t.Fail()
 	}
-	if p.Y() != p2.Y() {
+	if p.Y != p2.Y {
 		t.Fail()
 	}
-	if p.Z() != p2.Z() {
+	if p.Z != p2.Z {
 		t.Fail()
 	}
-	if p.Intensity() != p2.Intensity() {
+	if p.Intensity != p2.Intensity {
 		t.Fail()
 	}
-	if p.RetNum() != p2.RetNum() {
+	if p.RetNum != p2.RetNum {
 		t.Fail()
 	}
-	if p.RetCount() != p2.RetCount() {
+	if p.RetCount != p2.RetCount {
 		t.Fail()
 	}
 }
@@ -370,8 +370,8 @@ func TestOverRead(t *testing.T) {
 			break
 		}
 	}
-	p, e := l.GetNextPoint()
-	if p != nil || e == nil {
+	_, e := l.GetNextPoint()
+	if e == nil {
 		t.Fail()
 	}
 }
@@ -379,14 +379,14 @@ func TestOverRead(t *testing.T) {
 func TestFilter(t *testing.T) {
 	l := openTest(small, t)
 	l.SetFilter(0, 0, 0, 0)
-	p, err := l.GetNextPoint()
-	if p != nil || err == nil {
+	_, err := l.GetNextPoint()
+	if err == nil {
 		t.Log("Spatial filter failed")
 		t.FailNow()
 	}
 	l.ClearFilter()
-	p, err = l.GetNextPoint()
-	if p == nil || err != nil {
+	_, err = l.GetNextPoint()
+	if err != nil {
 		t.Log("Unsetting spatial filter failed")
 		t.FailNow()
 	}

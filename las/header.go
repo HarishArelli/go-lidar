@@ -43,8 +43,8 @@ type headerv3 struct {
 }
 
 type headerv4 struct {
-	EvlrOffset         uint64
-	EvlrCount          uint32
+	EvlrOffset     uint64
+	EvlrCount      uint32
 	PointCount     uint64
 	PointsByReturn [15]uint64
 }
