@@ -2,6 +2,8 @@
 // All rights reserved.  Use of this source code is governed by the MIT
 // license that can be found in the LICENSE file.
 
+// Package las implements read access to LASF style lidar files.  All header
+// versions (0, 1, 2, 3, 4) are supported.
 package las
 
 import (
@@ -116,7 +118,7 @@ func (las *Lasf) Rewind() error {
 
 // GetNextPoint reads the next point in the file.  After the file is opened and
 // any VLRs are read into memory, the file pointer is set to the first point.
-// Each call to GetNexPoint returns the next point in the file.  This
+// Each call to GetNextPoint returns the next point in the file.  This
 // sequence is interupted if GetPoint is explicitly called.  This means
 // GetNextPoint returns point n, then a call GetPoint(m), GetNextPoint will
 // return point at m+1, not n+1.  If there is an error reading the point, or if
@@ -160,6 +162,9 @@ func (las *Lasf) GetPoint(n uint64) (Pointer, error) {
 	return p, nil
 }
 
+// SetFilter applies a minimum bounding rectangle spatial filter on points
+// returned by GetNextPoint.  GetPoint is unaffected by the filter.  If a
+// QuadTree has been built, it is used to potentially speed up access.
 func (las *Lasf) SetFilter(xmin, xmax, ymin, ymax float64) {
 	las.xmin = xmin
 	las.xmax = xmax
@@ -172,6 +177,8 @@ func (las *Lasf) SetFilter(xmin, xmax, ymin, ymax float64) {
 	las.qid = 0
 }
 
+// ClearFilter clears the spatial filter.  Rewind() is called and sequential
+// reading is reset.
 func (las *Lasf) ClearFilter() {
 	las.SetFilter(-1*math.MaxFloat64, math.MaxFloat64, -1*math.MaxFloat64, math.MaxFloat64)
 	las.Rewind()
@@ -179,6 +186,8 @@ func (las *Lasf) ClearFilter() {
 	las.qid = 0
 }
 
+// BuildQuadTree creates a simple spatial index to potentially speed up
+// filtered reads using GetNextPoint.
 func (las *Lasf) BuildQuadTree() {
 	las.ClearFilter()
 	n := uint64(float64(las.PointCount() / 10.0))
